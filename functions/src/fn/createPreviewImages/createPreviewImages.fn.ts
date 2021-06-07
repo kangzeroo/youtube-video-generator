@@ -6,8 +6,10 @@ const createPreviewImages = functions.storage
   .bucket(RAW_VIDEOS_CLOUD_BUCKET_NAME)
   .object()
   .onFinalize(async (object) => {
-    console.log("cloud function createPreviewImages()");
-    await makePreviewImages(object);
+    const fileName = object?.name || "";
+    if (fileName.indexOf(".mp4") > -1) {
+      await makePreviewImages(object);
+    }
   });
 
 export default createPreviewImages;
