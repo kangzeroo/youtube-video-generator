@@ -2,9 +2,9 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import ytdl from "ytdl-core";
 import { v4 as uuidv4 } from "uuid";
-import { CLOUD_BUCKET, USER_ID } from "@constants/infrastructure";
+import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/infrastructure";
 
-const bucket = admin.storage().bucket(CLOUD_BUCKET);
+const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
 
 const processYouTube = functions.https.onRequest(async (req, res) => {
   const { url, startTime, endTime } = req.body;

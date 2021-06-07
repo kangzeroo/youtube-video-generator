@@ -10,7 +10,10 @@ import { path as ffprobePath } from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
-import { USER_ID, CLOUD_BUCKET } from "@constants/infrastructure";
+import {
+  USER_ID,
+  PROCESSED_VIDEOS_CLOUD_BUCKET,
+} from "@constants/infrastructure";
 
 type TObjectMetadata = functions.storage.ObjectMetadata;
 
@@ -158,7 +161,7 @@ export const makePreviewImages = async (
         const destination = `${USER_ID}/processed-videos/${videoId}/thumbnails/${name}`;
         await admin
           .storage()
-          .bucket(CLOUD_BUCKET)
+          .bucket(PROCESSED_VIDEOS_CLOUD_BUCKET)
           .upload(`${os.tmpdir()}/${name}`, {
             destination,
           });
