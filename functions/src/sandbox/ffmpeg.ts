@@ -1,5 +1,5 @@
+// dev mode for --> functions/src/@api/thumbnail-preview.api.ts
 import path from "path";
-// import fs from "fs";s
 import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 import ffmpeg from "fluent-ffmpeg";
 ffmpeg.setFfmpegPath(ffmpegPath);

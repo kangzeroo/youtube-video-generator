@@ -3,10 +3,13 @@ import * as functions from "firebase-functions";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import _ from "lodash";
 import { v4 as uuidv4 } from "uuid";
 import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
+import { path as ffprobePath } from "@ffprobe-installer/ffprobe";
 import ffmpeg from "fluent-ffmpeg";
 ffmpeg.setFfmpegPath(ffmpegPath);
+ffmpeg.setFfprobePath(ffprobePath);
 import { USER_ID, CLOUD_BUCKET } from "@constants/infrastructure";
 
 type TObjectMetadata = functions.storage.ObjectMetadata;
@@ -15,7 +18,7 @@ type TObjectMetadata = functions.storage.ObjectMetadata;
 to outDirectory and outFile */
 
 const splitRawVideoPathToGetId = (rawVideoPath?: string): string => {
-  // rawVideoPath = "{user_id}/raw-youtube/{video_id}}.mp4"
+  // rawVideoPath = `${user_id}/raw-youtube/${video_id}}.mp4`
   let videoId = "";
   if (!rawVideoPath) {
     videoId = uuidv4();
@@ -31,31 +34,98 @@ const splitRawVideoPathToGetId = (rawVideoPath?: string): string => {
   return videoId;
 };
 
-const extractPreviewImage = (
+// show more thumbnails for longer videos
+export const calculateTimemarks = (duration: number): number[] => {
+  if (duration <= 2) {
+    return [parseFloat((duration / 2).toFixed(1))];
+  } else if (duration <= 5) {
+    const numThumbnails = 2;
+    const timeStep = Math.floor(duration / numThumbnails);
+    return _.uniq(
+      Array.from(Array(numThumbnails).keys())
+        .map((idx) => 1 + idx * timeStep)
+        .filter((t) => t < duration)
+    );
+  } else if (duration <= 10) {
+    const numThumbnails = 4;
+    const timeStep = Math.floor(duration / numThumbnails);
+    return _.uniq(
+      Array.from(Array(numThumbnails).keys())
+        .map((idx) => 1 + idx * timeStep)
+        .filter((t) => t < duration)
+    );
+  } else if (duration <= 30) {
+    const numThumbnails = 5;
+    const timeStep = Math.floor(duration / numThumbnails);
+    return _.uniq(
+      Array.from(Array(numThumbnails).keys())
+        .map((idx) => 1 + idx * timeStep)
+        .filter((t) => t < duration)
+    );
+  } else if (duration <= 60) {
+    const numThumbnails = 6;
+    const timeStep = Math.floor(duration / numThumbnails);
+    return _.uniq(
+      Array.from(Array(numThumbnails).keys())
+        .map((idx) => 1 + idx * timeStep)
+        .filter((t) => t < duration)
+    );
+  }
+  const numThumbnails = 7;
+  const timeStep = Math.floor(duration / numThumbnails);
+  return _.uniq(
+    Array.from(Array(numThumbnails).keys())
+      .map((idx) => 1 + idx * timeStep)
+      .filter((t) => t < duration)
+  );
+};
+
+const ffProbe = async (inFilePath: string): Promise<number> => {
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(inFilePath, (err, metadata) => {
+      if (err) {
+        reject(err);
+      } else {
+        if (metadata) {
+          const duration = metadata.format.duration || 0;
+          resolve(duration);
+        } else {
+          reject(new Error("Video missing metadata"));
+        }
+      }
+    });
+  });
+};
+
+const extractPreviewImage = async (
   inFilePath: string,
   outDir: string,
   width = 320
 ): Promise<string[]> => {
   const savedFileNames: string[] = [];
-  console.log(width);
-  const cmd = ffmpeg(inFilePath)
-    .takeScreenshots(4, outDir)
-    // .screenshots({
-    //   timemarks: ["10%", "30%", "50%", "80%"],
-    //   size: `${width}x?`,
-    //   folder: outDir,
-    // })
-    .on("filenames", (filenames) => {
-      console.log("Will generate " + filenames.join(", "));
-      filenames.forEach((n: string) => savedFileNames.push(n));
-    });
+  try {
+    const duration = await ffProbe(inFilePath);
+    const timemarks = calculateTimemarks(duration);
+    const cmd = ffmpeg(inFilePath)
+      .on("filenames", (filenames) => {
+        console.log("Will generate " + filenames.join(", "));
+        filenames.forEach((n: string) => savedFileNames.push(n));
+      })
+      .screenshots({
+        timemarks: timemarks,
+        size: `${width}x?`,
+        folder: outDir,
+      });
 
-  return new Promise((resolve, reject) => {
-    cmd.on("end", () => {
-      resolve(savedFileNames);
+    return new Promise((resolve, reject) => {
+      cmd.on("end", () => {
+        resolve(savedFileNames);
+      });
+      cmd.on("error", reject);
     });
-    cmd.on("error", reject);
-  });
+  } catch (e) {
+    throw Error(e);
+  }
 };
 
 export const makePreviewImages = async (
@@ -72,7 +142,6 @@ export const makePreviewImages = async (
 
   fs.statSync(tempVideoPath);
   const fileNames: string[] = [];
-
   try {
     const names: string[] = await extractPreviewImage(
       tempVideoPath,
@@ -109,13 +178,15 @@ export const makePreviewImages = async (
         },
         { merge: true }
       );
-    // Clean up!
     fs.unlinkSync(tempVideoPath);
-    fs.unlinkSync(`${os.tmpdir()}/thumbnail.png`);
+    fileNames.forEach((name) => {
+      fs.unlinkSync(`${os.tmpdir()}/${name}`);
+    });
   } else {
-    // Clean up!
     fs.unlinkSync(tempVideoPath);
-    fs.unlinkSync(`${os.tmpdir()}/thumbnail.png`);
+    fileNames.forEach((name) => {
+      fs.unlinkSync(`${os.tmpdir()}/${name}`);
+    });
     throw Error("Failed to generate thumbnails, no names");
   }
 };
