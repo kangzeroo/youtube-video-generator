@@ -9,7 +9,7 @@
     "target": "es2017",
     "baseUrl": "src",
     "paths": {
-      "@constants/*": ["@constants/*"] 
+      "@constants/*": ["@constants/*"]
     },
     "typeRoots" : ["./node_modules/@types", "./src/@types"]
   },
