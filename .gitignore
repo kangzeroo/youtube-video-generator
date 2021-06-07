@@ -10,6 +10,8 @@ firebase-debug.*.log*
 # mac DS_Store
 **/.DS_Store
 
+**/*.mp4
+
 # Firebase cache
 .firebase/
 
