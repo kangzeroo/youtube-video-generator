@@ -25,7 +25,14 @@ module.exports = {
     "import",
   ],
   rules: {
-    quotes: ["error", "double"],
-    "object-curly-spacing": "always"
-  }
+    "quotes": ["error", "double"],
+    "object-curly-spacing": 0,
+    "indent": "off",
+    "max-len": "off",
+  },
+  settings: {
+    "import/resolver": {
+      "eslint-import-resolver-typescript": {},
+    },
+  },
 };

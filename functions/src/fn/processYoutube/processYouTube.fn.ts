@@ -1,6 +1,6 @@
 import * as functions from "firebase-functions";
-import * as admin from "firebase-admin";
-import * as ytdl from "ytdl-core";
+import admin from "firebase-admin";
+import ytdl from "ytdl-core";
 import { v4 as uuidv4 } from "uuid";
 import { CLOUD_BUCKET, USER_ID } from "@constants/infrastructure";
 
@@ -13,6 +13,7 @@ const processYouTube = functions.https.onRequest(async (req, res) => {
       endTime && {
         range: { start: startTime, end: endTime },
       }),
+    /* eslint-disable  @typescript-eslint/no-explicit-any */
     filter: (format: any) => format.container === "mp4",
   };
   const downloadToken = uuidv4();
