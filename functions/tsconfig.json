@@ -10,7 +10,8 @@
     "target": "es2017",
     "baseUrl": "src",
     "paths": {
-      "@constants/*": ["@constants/*"]
+      "@constants/*": ["@constants/*"],
+      "@api/*": ["@api/*"]
     },
     "typeRoots" : ["./node_modules/@types", "./src/@types"]
   },

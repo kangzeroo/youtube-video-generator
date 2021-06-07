@@ -29,6 +29,13 @@ module.exports = {
     "object-curly-spacing": 0,
     "indent": "off",
     "max-len": "off",
+    "import/no-named-as-default-member": "off",
+    "new-cap": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    // while in dev
+    // "no-unused-vars": 0,
+    // "@typescript-eslint/no-unused-vars": ["off"],
+    // "noUnusedLocals": false,
   },
   settings: {
     "import/resolver": {
