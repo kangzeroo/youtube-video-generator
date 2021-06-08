@@ -43,7 +43,7 @@ const parseDate = (dateString: string): string | null => {
 /* When a video is uploaded to cloud storage, this function
 kicks off analysis with the Video Intelligence API, which runs
 asynchronously. It also writes some data about the job to
-Firestore */
+Firestore. The actual metadata end up in another Google Storage Bucket */
 export const analyzeVideoVision = async (
   object: TObjectMetadata
 ): Promise<void> => {
