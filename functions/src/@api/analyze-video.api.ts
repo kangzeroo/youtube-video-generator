@@ -1,6 +1,6 @@
 import admin from "firebase-admin";
 import * as functions from "firebase-functions";
-import video from "@google-cloud/video-intelligence";
+import video, { protos } from "@google-cloud/video-intelligence";
 import { METADATA_VIDEOS_CLOUD_BUCKET_NAME } from "@constants/constants";
 
 type TObjectMetadata = functions.storage.ObjectMetadata;
@@ -63,16 +63,28 @@ export const analyzeVideoVision = async (
   const jsonFile = `${videoId}.json`;
 
   const featureList = {
-    LABEL_DETECTION: 1,
-    SPEECH_TRANSCRIPTION: 1,
-    FEATURE_UNSPECIFIED: 1,
-    EXPLICIT_CONTENT_DETECTION: 1,
-    FACE_DETECTION: 1,
-    TEXT_DETECTION: 1,
-    OBJECT_TRACKING: 1,
-    LOGO_RECOGNITION: 1,
-    CELEBRITY_RECOGNITION: 1,
-    PERSON_DETECTION: 1,
+    FEATURE_UNSPECIFIED:
+      "FEATURE_UNSPECIFIED" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    LABEL_DETECTION:
+      "LABEL_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    SHOT_CHANGE_DETECTION:
+      "SHOT_CHANGE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    EXPLICIT_CONTENT_DETECTION:
+      "EXPLICIT_CONTENT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    FACE_DETECTION:
+      "FACE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    SPEECH_TRANSCRIPTION:
+      "SPEECH_TRANSCRIPTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    TEXT_DETECTION:
+      "TEXT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    OBJECT_TRACKING:
+      "OBJECT_TRACKING" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    LOGO_RECOGNITION:
+      "LOGO_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    CELEBRITY_RECOGNITION:
+      "CELEBRITY_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+    PERSON_DETECTION:
+      "PERSON_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
   };
   const request = {
     inputUri: `gs://${object.bucket}/${object.name}`,

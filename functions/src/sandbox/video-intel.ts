@@ -1,7 +1,6 @@
 // import * as serviceAccount from "./firebase-serviceAccountKey.json";
 import admin from "firebase-admin";
-import video from "@google-cloud/video-intelligence";
-
+import video, { protos } from "@google-cloud/video-intelligence";
 // const params = {
 //   type: serviceAccount.type,
 //   projectId: serviceAccount.project_id,
@@ -19,18 +18,29 @@ import video from "@google-cloud/video-intelligence";
 //   credential: admin.credential.cert(params),
 // });
 admin.initializeApp();
-
 const featureList = {
-  LABEL_DETECTION: 1,
-  SPEECH_TRANSCRIPTION: 1,
-  FEATURE_UNSPECIFIED: 1,
-  EXPLICIT_CONTENT_DETECTION: 1,
-  FACE_DETECTION: 1,
-  TEXT_DETECTION: 1,
-  OBJECT_TRACKING: 1,
-  LOGO_RECOGNITION: 1,
-  CELEBRITY_RECOGNITION: 1,
-  PERSON_DETECTION: 1,
+  FEATURE_UNSPECIFIED:
+    "FEATURE_UNSPECIFIED" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  LABEL_DETECTION:
+    "LABEL_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  SHOT_CHANGE_DETECTION:
+    "SHOT_CHANGE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  EXPLICIT_CONTENT_DETECTION:
+    "EXPLICIT_CONTENT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  FACE_DETECTION:
+    "FACE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  SPEECH_TRANSCRIPTION:
+    "SPEECH_TRANSCRIPTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  TEXT_DETECTION:
+    "TEXT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  OBJECT_TRACKING:
+    "OBJECT_TRACKING" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  LOGO_RECOGNITION:
+    "LOGO_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  CELEBRITY_RECOGNITION:
+    "CELEBRITY_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  PERSON_DETECTION:
+    "PERSON_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
 };
 
 const videoContext = {
@@ -42,9 +52,13 @@ const videoContext = {
 
 const request = {
   inputUri:
-    "gs://raw-videos-prod/default-user/raw-youtube/33faab2f-e8d6-4f56-a787-9a00273cc86b.mp4",
-  outputUri: `gs://${process.env.VIDEO_JSON_BUCKET}/dev-user/video-id/video-id.json`,
-  features: [featureList.LABEL_DETECTION, featureList.SPEECH_TRANSCRIPTION],
+    "gs://raw-videos-prod/default-user/raw-youtube/b63fed12-c7d4-49ca-ba06-84b0ad934c73.mp4",
+  outputUri: "gs://metadata-videos-prod/dev-user/video-id/video-id.json",
+  features: [
+    featureList.LABEL_DETECTION,
+    featureList.SPEECH_TRANSCRIPTION,
+    featureList.SHOT_CHANGE_DETECTION,
+  ],
   videoContext: videoContext,
 };
 
