@@ -1,7 +1,7 @@
 import admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import video from "@google-cloud/video-intelligence";
-import { METADATA_VIDEOS_CLOUD_BUCKET_NAME } from "@constants/infrastructure";
+import { METADATA_VIDEOS_CLOUD_BUCKET_NAME } from "@constants/constants";
 
 type TObjectMetadata = functions.storage.ObjectMetadata;
 

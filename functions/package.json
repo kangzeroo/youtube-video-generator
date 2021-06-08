@@ -17,6 +17,8 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@ffprobe-installer/ffprobe": "^1.1.0",
     "@google-cloud/video-intelligence": "^3.3.2",
+    "algoliasearch": "^4.9.1",
+    "dotenv": "^10.0.0",
     "ffmpeg-extract-frames": "^2.0.2",
     "ffmpeg-installer": "^1.0.2",
     "firebase": "^8.6.5",
@@ -24,6 +26,7 @@
     "firebase-functions": "^3.14.1",
     "firebase-tools": "^9.12.1",
     "fluent-ffmpeg": "^2.1.2",
+    "hashcode": "^1.0.3",
     "lodash": "^4.17.21",
     "uuid": "^8.3.2",
     "ytdl-core": "^4.8.2"
