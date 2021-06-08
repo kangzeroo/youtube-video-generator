@@ -16,6 +16,7 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@ffprobe-installer/ffprobe": "^1.1.0",
+    "@google-cloud/video-intelligence": "^3.3.2",
     "ffmpeg-extract-frames": "^2.0.2",
     "ffmpeg-installer": "^1.0.2",
     "firebase": "^8.6.5",
