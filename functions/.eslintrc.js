@@ -32,6 +32,7 @@ module.exports = {
     "import/no-named-as-default-member": "off",
     "new-cap": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
     // while in dev
     // "no-unused-vars": 0,
     // "@typescript-eslint/no-unused-vars": ["off"],

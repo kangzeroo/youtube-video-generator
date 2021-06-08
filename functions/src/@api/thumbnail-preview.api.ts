@@ -13,7 +13,8 @@ ffmpeg.setFfprobePath(ffprobePath);
 import {
   USER_ID,
   PROCESSED_VIDEOS_CLOUD_BUCKET,
-} from "@constants/infrastructure";
+  PLACEHOLDER_FILENAME,
+} from "@constants/constants";
 
 type TObjectMetadata = functions.storage.ObjectMetadata;
 
@@ -139,7 +140,7 @@ export const makePreviewImages = async (
   await admin
     .storage()
     .bucket(object.bucket)
-    .file(object.name || "temp-video.mp4")
+    .file(object.name || `${PLACEHOLDER_FILENAME}.mp4`)
     .download({ destination: tempVideoPath });
   const videoId = splitRawVideoPathToGetId(object.name);
 

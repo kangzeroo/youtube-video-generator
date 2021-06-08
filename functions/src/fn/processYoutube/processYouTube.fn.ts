@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import ytdl from "ytdl-core";
 import { v4 as uuidv4 } from "uuid";
-import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/infrastructure";
+import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/constants";
 
 const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
 
