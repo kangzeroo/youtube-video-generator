@@ -80,9 +80,7 @@ export const save = async (
 
   const client = algoliasearch(ALGOLIA_APPID, ALGOLIA_ADMIN_APIKEY);
   const index = client.initIndex(ALGOLIA_INDEX);
-  console.log(
-    `Createtd algolia index client for index ${process.env.ALOGLIA_INDEX}`
-  );
+  console.log(`Created algolia index client for index ${ALGOLIA_INDEX}`);
 
   // Adding tags lets us restrict values by user, and search by annotation type.
   const _addMeta = (

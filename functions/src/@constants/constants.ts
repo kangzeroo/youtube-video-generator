@@ -14,7 +14,7 @@ export const METADATA_VIDEOS_CLOUD_BUCKET = "gs://metadata-videos-prod";
 export const METADATA_VIDEOS_CLOUD_BUCKET_NAME = "metadata-videos-prod";
 
 // algolia
-export const ALGOLIA_APPID = "";
-export const ALGOLIA_ADMIN_APIKEY = "";
-export const ALGOLIA_SEARCH_KEY = "";
-export const ALGOLIA_INDEX = "";
+export const ALGOLIA_APPID = "V5EOCVB518";
+export const ALGOLIA_ADMIN_APIKEY = "5adbb4f7edf100dd84cd622acdbd67cf";
+export const ALGOLIA_SEARCH_KEY = "04cd49a4741e95ef3d28c47011e31974";
+export const ALGOLIA_INDEX = "DEFAULT_INDEX";
