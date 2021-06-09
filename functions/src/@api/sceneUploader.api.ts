@@ -3,9 +3,11 @@
  * ---------------------------
  */
 
+import admin from "firebase-admin";
 import { protos } from "@google-cloud/video-intelligence";
+import { SCENE_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
+import type { TSceneId } from "@customTypes/types.spec";
 
-// PLACEHOLDER
 interface TExtractValidScenesInput {
   annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse;
   minSceneDuration: number;
@@ -28,13 +30,16 @@ export const extractValidScenes = ({
   ];
 };
 
-// PLACEHOLDER
 export const uploadSceneToBucket = async (
   sceneSegment: protos.google.cloud.videointelligence.v1.VideoSegment,
-  videoPath: string
+  videoPath: string,
+  sceneId: TSceneId
 ): Promise<void> => {
-  // `gs://${SCENE_VIDEOS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`
   console.log(sceneSegment);
   console.log(videoPath);
+  const destination = `scene/${sceneId}/${sceneId}.png`;
+  await admin.storage().bucket(SCENE_VIDEOS_CLOUD_BUCKET).upload(videoPath, {
+    destination,
+  });
   return;
 };

@@ -11,7 +11,7 @@ export const extractUserIdAndVideoId = (
   bucketFilePath: string
 ): IUserVideoId => {
   console.log(bucketFilePath);
-  // Files have the format `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.json`
+  // Files have the format `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`
   // const userId = object?.name?.split("/")[0] || "";
   // const videoId = object?.name?.split("/")[2].split(".")[0] || "";
   return {

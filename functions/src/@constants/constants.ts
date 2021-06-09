@@ -9,22 +9,16 @@ import { protos } from "@google-cloud/video-intelligence";
 export const USER_ID = "default-user";
 
 // where we store raw videos
-export const RAW_VIDEOS_CLOUD_BUCKET = "gs://raw-videos-prod";
-export const RAW_VIDEOS_CLOUD_BUCKET_NAME = "raw-videos-prod";
+export const RAW_VIDEOS_CLOUD_BUCKET = "raw-videos-prod";
 // where we store SHOT_CHANGE_DETECTION annotations
 export const SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET =
-  "gs://shot-change-annotations-88-prod";
-export const SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME =
   "shot-change-annotations-88-prod";
 // where we store split videos
-export const SCENE_VIDEOS_CLOUD_BUCKET = "gs://split-videos-88-prod";
-export const SCENE_VIDEOS_CLOUD_BUCKET_NAME = "split-videos-88-prod";
+export const SCENE_VIDEOS_CLOUD_BUCKET = "split-videos-88-prod";
 // where we store video thumbnails
-export const VIDEO_THUMBNAILS_CLOUD_BUCKET = "gs://video-thumbnails-88-prod";
-export const VIDEO_THUMBNAILS_CLOUD_BUCKET_NAME = "video-thumbnails-88-prod";
+export const VIDEO_THUMBNAILS_CLOUD_BUCKET = "video-thumbnails-88-prod";
 // where we store video metadata
-export const METADATA_VIDEOS_CLOUD_BUCKET = "gs://metadata-videos-prod";
-export const METADATA_VIDEOS_CLOUD_BUCKET_NAME = "metadata-videos-prod";
+export const METADATA_VIDEOS_CLOUD_BUCKET = "metadata-videos-prod";
 
 // list of video-intelligence services
 export const VIDEO_INTELLIGENCE_SERVICES = {

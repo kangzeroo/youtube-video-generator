@@ -5,7 +5,7 @@
  * Triggers upon HTTP call of an endpoint
  * Client provides the URL of a YouTube video they want, video gets saved
  *
- * `gs://${RAW_VIDEOS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.mp4`
+ * `gs://${RAW_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.mp4`
  *
  * Note to check if the video is of a valid type and duration
  */

@@ -3,9 +3,9 @@
  * ---------------------------
  */
 
-type TUserId = string;
-type TVideoId = string;
-type TSceneId = string;
+export type TUserId = string;
+export type TVideoId = string;
+export type TSceneId = string;
 export enum TVideoFileExtension {
   ".mp4",
 }
@@ -14,4 +14,8 @@ export interface IUserVideoId {
   videoId: TVideoId;
   sceneId?: TSceneId;
   videoFileFormat?: TVideoFileExtension;
+}
+
+export interface ILabeledScene {
+  sceneId: TSceneId;
 }

@@ -5,7 +5,7 @@
  * We annotate the video with timeranges of when scenes change
  * Annotations get saved to another cloud bucket where another cloud function handles snipping the video into its smaller scenes
  *
- * `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.json`
+ * `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`
  */
 
 import * as functions from "firebase-functions";
@@ -16,13 +16,13 @@ import {
   checkIfValidVideoLength,
 } from "@api/helper.api";
 import {
-  RAW_VIDEOS_CLOUD_BUCKET_NAME,
+  RAW_VIDEOS_CLOUD_BUCKET,
   VIDEO_INTELLIGENCE_SERVICES,
-  SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME,
+  SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET,
 } from "@constants/constants";
 
 const annotateSceneShots = functions.storage
-  .bucket(RAW_VIDEOS_CLOUD_BUCKET_NAME)
+  .bucket(RAW_VIDEOS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
     if (object?.name) {
@@ -37,7 +37,7 @@ const annotateSceneShots = functions.storage
         // specify SHOT_CHANGE_DETECTION
         const request = {
           inputUri: `gs://${filePath}`,
-          outputUri: `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.json`,
+          outputUri: `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`,
           features: [VIDEO_INTELLIGENCE_SERVICES.SHOT_CHANGE_DETECTION],
         };
         // annotate the video

@@ -34,8 +34,5 @@ The `$ npm run export-creds` is only necessary if you plan on using the authenti
 Always be verifying things work in development before ever porting it over to firebase functions.
 
 ## To Do
-1. Generate the thumbnails in `functions/src/fn/sceneShots/analyzeSceneShots.fn.ts`
-2. Save the scene label metadata to firestore in `functions/src/fn/addToDatabase/addToDatabase.fn.ts`
 3. Fill in the placeholder helper functions in `functions/src/@api/helper.api.ts`
 4. Test it in production
-5. Clean up constant variable names in `functions/src/@constants/constants.ts`
