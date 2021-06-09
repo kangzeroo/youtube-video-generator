@@ -24,23 +24,31 @@ import {
   VIDEO_THUMBNAILS_CLOUD_BUCKET,
 } from "@constants/constants";
 import { extractPreviewImage } from "@api/thumbnail.api";
-import { extractUserIdAndVideoId } from "@api/helper.api";
+import { extractRelevantIds } from "@api/helper.api";
+
+const log = functions.logger.log;
 
 const analyzeSceneShots = functions.storage
   .bucket(SCENE_VIDEOS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
+    log("1. analyzeSceneShots");
     const filePath = object?.name || "";
+    log("1b. filePath: ", filePath);
     if (filePath) {
       // Temporarily download the scene.
       const tempVideoPath = path.join(os.tmpdir(), "scene");
+      log("2. tempVideoPath: ", tempVideoPath);
       await admin
         .storage()
         .bucket(object.bucket)
         .file(filePath)
         .download({ destination: tempVideoPath });
-      const { videoId, userId, sceneId } = extractUserIdAndVideoId(filePath);
+      const { videoId, userId, sceneId } = extractRelevantIds(filePath);
 
+      log(
+        `2b. relevantIds: videoId=${videoId}, userId=${userId}, sceneId=${sceneId}`
+      );
       // Generate thumbnails from scene
       fs.statSync(tempVideoPath);
       const fileNames: string[] = [];
@@ -53,8 +61,10 @@ const analyzeSceneShots = functions.storage
       } catch (err) {
         throw Error(err);
       }
+      log(`3. fileNames: ${fileNames}`);
       if (fileNames.length > 0 && sceneId) {
         // save thumbnails to cloud storage
+        log("3b. Saving thumbnails to cloud storage...");
         const savedThumbnails = await Promise.all(
           fileNames.map(async (idx, name) => {
             const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/thumbnail/thumbnail-${idx}-${sceneId}.png`;
@@ -67,6 +77,7 @@ const analyzeSceneShots = functions.storage
             return destination;
           })
         );
+        log("4. Saving thumbnails to firestore...");
         // save thumbnail scene references to firestore
         admin.firestore().collection("scenes").doc(sceneId).set(
           {
@@ -87,12 +98,15 @@ const analyzeSceneShots = functions.storage
         throw Error("Failed to generate thumbnails, no names");
       }
 
+      log("4. Annotating LABEL_DETECTION on scene...");
       // Annotate LABEL_DETECTION on scene video
+      const outputUri = `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`;
       const request = {
         inputUri: `gs://${filePath}`,
-        outputUri: `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`,
+        outputUri,
         features: [VIDEO_INTELLIGENCE_SERVICES.LABEL_DETECTION],
       };
+      log("4b. Uploading to ", outputUri);
       // annotate the scene video
       const client = new video.v1.VideoIntelligenceServiceClient();
       const [operation] = await client.annotateVideo(request);

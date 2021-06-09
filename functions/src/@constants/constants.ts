@@ -46,8 +46,9 @@ export const VIDEO_INTELLIGENCE_SERVICES = {
     "PERSON_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
 };
 
-// valid video formats
+// video related constants
 import type { TVideoFileExtension } from "@customTypes/types.spec";
 export const VALID_VIDEO_FORMATS = {
   MP4: ".mp4" as unknown as TVideoFileExtension,
 };
+export const VALID_VIDEO_LENGTH_SECONDS = 60 * 20;

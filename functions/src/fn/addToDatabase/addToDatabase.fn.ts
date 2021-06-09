@@ -10,7 +10,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import camelize from "camelize";
-import { extractUserIdAndVideoId } from "@api/helper.api";
+import { extractRelevantIds } from "@api/helper.api";
 import { createLabeledScenesForSearch } from "@api/analyze.api";
 import { METADATA_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
 
@@ -19,7 +19,7 @@ const addToDatabase = functions.storage
   .object()
   .onFinalize(async (object) => {
     const filePath = object?.name || "";
-    const { videoId, userId, sceneId } = extractUserIdAndVideoId(filePath);
+    const { videoId, userId, sceneId } = extractRelevantIds(filePath);
     // Locally download the json file created by the vision API
     if (filePath && sceneId) {
       // locally download the metadata json
