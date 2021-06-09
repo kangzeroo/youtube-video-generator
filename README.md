@@ -20,3 +20,15 @@ This smart video generator lets you quickly find the media you want to use in yo
 
 2. This tool only knows of the videos its been fed. It does not have access to videos unless it's been given access to those videos before.
 
+## Run in development
+It is highly recommended you first code in the `functions/src/sandbox/**.ts` folder before attempting to deploy to firebase. It is much faster than deploying to a dev firebase infrastructure or a local firebase simulator.
+
+Run the below commands:
+```
+$ npm run export-creds
+$ npm run sandbox ./src/sandbox/your-sandbox-file.ts
+```
+
+The `$ npm run export-creds` is only necessary if you plan on using the authenticated firebase client locally. The `npm run sandbox` will run `ts-node` on your sandbox typescript file, and also output the console.log to your Chrome console at `chrome://inspect/#devices` (very convinent!).
+
+Always be verifying things work in development before ever porting it over to firebase functions.

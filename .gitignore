@@ -11,6 +11,7 @@ firebase-debug.*.log*
 **/.DS_Store
 
 **/*.mp4
+**/firebase-serviceAccountKey.json
 
 # Firebase cache
 .firebase/
