@@ -5,7 +5,7 @@
  * We download the original video and split into 2+ second scenes (based on annotations)
  * Each scene is saved as a separate MP4 to its own cloud bucket
  *
- * `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.json`
+ * `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`
  *
  * Note that a lot of compute & memory resources will be used
  * when downloading the video, splitting it into its 100+ scenes, and uploading them to buckets
@@ -19,60 +19,78 @@ import path from "path";
 import os from "os";
 import { protos } from "@google-cloud/video-intelligence";
 import camelize from "camelize";
-import { extractUserIdAndVideoId } from "@api/helper.api";
+import { extractRelevantIds } from "@api/helper.api";
 import {
   extractValidScenes,
   uploadSceneToBucket,
 } from "@api/sceneUploader.api";
 import {
-  RAW_VIDEOS_CLOUD_BUCKET_NAME,
-  SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME,
+  RAW_VIDEOS_CLOUD_BUCKET,
+  SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET,
 } from "@constants/constants";
 
+const log = functions.logger.log;
+
 const saveSceneShots = functions.storage
-  .bucket(SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME)
+  .bucket(SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
+    log("1. saveSceneShots()");
     const filePath = object?.name;
+    log("1b. filePath: ", filePath);
     if (filePath) {
-      // Get the identifying information
-      const { videoId, userId, videoFileFormat } =
-        extractUserIdAndVideoId(filePath);
-      const videoName = `user/${userId}/video/${videoId}/${videoId}${videoFileFormat}`;
-      // Locally download the video file
-      const videoPath = path.join(os.tmpdir(), "video");
-      await admin
-        .storage()
-        .bucket(RAW_VIDEOS_CLOUD_BUCKET_NAME)
-        .file(videoName)
-        .download({ destination: videoPath });
-      // Locally download the json file created by the vision API
-      const tempFilePathAnnotations = path.join(os.tmpdir(), "annotations");
-      await admin
-        .storage()
-        .bucket(object.bucket)
-        .file(filePath)
-        .download({ destination: tempFilePathAnnotations });
-      // The json is in snakecase and we must convert to camelCase to be type compatible
-      const annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse =
-        camelize(JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8")));
+      const { videoId, userId, sceneId, videoFileFormat } =
+        extractRelevantIds(filePath);
+      log(
+        `2. relevantIds: videoId=${videoId}, userId=${userId}, sceneId=${sceneId}, videoFileFormat=${videoFileFormat}`
+      );
+      if (sceneId) {
+        // Get the identifying information
+        const videoName = `user/${userId}/video/${videoId}/${videoId}${videoFileFormat}`;
+        // Locally download the video file
+        log("2. Downloading the video...");
+        const videoPath = path.join(os.tmpdir(), "video");
+        log("2. videoPath: ", videoPath);
+        await admin
+          .storage()
+          .bucket(RAW_VIDEOS_CLOUD_BUCKET)
+          .file(videoName)
+          .download({ destination: videoPath });
+        // Locally download the json file created by the vision API
+        log("3. Downloading the json annotations...");
+        const tempFilePathAnnotations = path.join(os.tmpdir(), "annotations");
+        log("3b. annotationsPath: ", tempFilePathAnnotations);
+        await admin
+          .storage()
+          .bucket(object.bucket)
+          .file(filePath)
+          .download({ destination: tempFilePathAnnotations });
+        // The json is in snakecase and we must convert to camelCase to be type compatible
+        const annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse =
+          camelize(
+            JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8"))
+          );
 
-      // Extract only scenes with annotated duration of over 2 seconds
-      const minSceneDuration = 2;
-      const validScenes: protos.google.cloud.videointelligence.v1.VideoSegment[] =
-        extractValidScenes({
-          annotations,
-          minSceneDuration,
+        log("4. annotations: ", annotations);
+        // Extract only scenes with annotated duration of over 2 seconds
+        const minSceneDuration = 2;
+        const validScenes: protos.google.cloud.videointelligence.v1.VideoSegment[] =
+          extractValidScenes({
+            annotations,
+            minSceneDuration,
+          });
+        log("5. validScene: ", validScenes);
+
+        log("6. Uploading to cloud bucket... ");
+        // upload each valid scene to the right cloud bucket
+        await Promise.all(
+          validScenes.map(async (scene) => {
+            return await uploadSceneToBucket(scene, videoPath, sceneId);
+          })
+        ).catch((e) => {
+          throw e;
         });
-
-      // upload each valid scene to the right cloud bucket
-      await Promise.all(
-        validScenes.map(async (scene) => {
-          return await uploadSceneToBucket(scene, videoPath);
-        })
-      ).catch((e) => {
-        throw e;
-      });
+      }
     }
   });
 

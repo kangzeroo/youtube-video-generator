@@ -5,7 +5,7 @@
  * Triggers upon HTTP call of an endpoint
  * Client provides the URL of a YouTube video they want, video gets saved
  *
- * `gs://${RAW_VIDEOS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.mp4`
+ * `gs://${RAW_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.mp4`
  *
  * Note to check if the video is of a valid type and duration
  */
@@ -16,9 +16,12 @@ import ytdl from "ytdl-core";
 import { v4 as uuidv4 } from "uuid";
 import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/constants";
 
+const log = functions.logger.log;
+
 const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
 
 const downloadYouTube = functions.https.onRequest(async (req, res) => {
+  log("1. downloadYouTube()");
   const { url, startTime, endTime } = req.body;
   const options = {
     ...(startTime &&
@@ -29,12 +32,12 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
     filter: (format: any) => format.container === "mp4",
   };
   const downloadToken = uuidv4();
-  console.log("Attempting to upload youtube video to google cloud storage....");
+  log("2. Attempting to upload youtube video to google cloud storage....");
 
   // ytdl() --> createWriteStream()
   // https://github.com/fent/node-ytdl-core
   // https://googleapis.dev/nodejs/storage/latest/File.html#createWriteStream
-  const destinationPath = `${USER_ID}/raw-youtube/${uuidv4()}.mp4`;
+  const destinationPath = `user/${USER_ID}/video/${uuidv4()}.mp4`;
   const file = bucket.file(destinationPath);
 
   // allow private access to this file using a "download token"
@@ -46,6 +49,7 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
     "%2F"
   )}?alt=media&token=${downloadToken}`;
 
+  log("3. Writing video to cloud bucket");
   const writeStream = file.createWriteStream({
     metadata: {
       metadata: {

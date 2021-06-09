@@ -1,10 +1,10 @@
 # YouTube Video Generator
-Enable ​rapid creation of youtube videos by categorizing, tagging & clipping existing videos into a searchable media library
 
-## Use Case
-Creating youtube videos takes a long time. One of the most tedious parts is media sourcing - finding suitable video clips to use in your videos. Wouldn't it be great if you could just search "car chase" and get 2-10 second videos of car chases from YouTube?
+This app turns text into a YouTube video. Multiple scenes are generated based on text keywords or phrases you select, such as "dog chasing ball". If you don't like a scene, the app will offer alternatives until you are satisfied. 
 
-This smart video generator lets you quickly find the media you want to use in your YouTube videos, saving hours of manual searching for the right footage. Use this to make your YouTube videos twice as fast!
+Use this app to generate video content in mass. This is a better alternative to www.Lumen5.com which does not allow you to pick which word/phrases to generate scenes from.
+
+You can also feed this app existing YouTube videos and it will clip it into its individual scenes and tag the entities found in it (eg. "taco"). That allows you to later search for "taco" scenes to be used in your videos.
 
 ## Example Workflow
 
@@ -34,8 +34,5 @@ The `$ npm run export-creds` is only necessary if you plan on using the authenti
 Always be verifying things work in development before ever porting it over to firebase functions.
 
 ## To Do
-1. Generate the thumbnails in `functions/src/fn/sceneShots/analyzeSceneShots.fn.ts`
-2. Save the scene label metadata to firestore in `functions/src/fn/addToDatabase/addToDatabase.fn.ts`
-3. Fill in the placeholder helper functions in `functions/src/@api/helper.api.ts`
-4. Test it in production
-5. Clean up constant variable names in `functions/src/@constants/constants.ts`
+1. Test it in production
+2. Move out API keys to environment variables

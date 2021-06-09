@@ -14,52 +14,39 @@ ffmpeg.setFfprobePath(ffprobePath);
 to outDirectory and outFile */
 
 // show more thumbnails for longer videos
+// REFACTOR: unnecessarily convoluted
 export const calculateTimemarks = (duration: number): number[] => {
+  let timeStep = 1;
+  const timemarks: number[] = [];
   if (duration <= 2) {
     return [parseFloat((duration / 2).toFixed(1))];
   } else if (duration <= 5) {
     const numThumbnails = 2;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 10) {
     const numThumbnails = 4;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 30) {
     const numThumbnails = 5;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 60) {
     const numThumbnails = 6;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+  } else {
+    const numThumbnails = 7;
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks.concat(Array.from(Array(numThumbnails).keys()));
   }
-  const numThumbnails = 7;
-  const timeStep = Math.floor(duration / numThumbnails);
   return _.uniq(
-    Array.from(Array(numThumbnails).keys())
-      .map((idx) => 1 + idx * timeStep)
-      .filter((t) => t < duration)
+    timemarks.map((idx) => 1 + idx * timeStep).filter((t) => t < duration)
   );
 };
 
-const ffProbe = async (inFilePath: string): Promise<number> => {
+export const getVideoDuration = async (inFilePath: string): Promise<number> => {
   return new Promise((resolve, reject) => {
     ffmpeg.ffprobe(inFilePath, (err, metadata) => {
       if (err) {
@@ -83,7 +70,7 @@ export const extractPreviewImage = async (
 ): Promise<string[]> => {
   const savedFileNames: string[] = [];
   try {
-    const duration = await ffProbe(inFilePath);
+    const duration = await getVideoDuration(inFilePath);
     const timemarks = calculateTimemarks(duration);
     const cmd = ffmpeg(inFilePath)
       .on("filenames", (filenames) => {
