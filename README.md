@@ -1,10 +1,13 @@
 # YouTube Video Generator
 
+![demo](./readme-image.jpg)
+
 This app turns text into a YouTube video. Multiple scenes are generated based on text keywords or phrases you select, such as "dog chasing ball". If you don't like a scene, the app will offer alternatives until you are satisfied. 
 
 Use this app to generate video content in mass. This is a better alternative to www.Lumen5.com which does not allow you to pick which word/phrases to generate scenes from.
 
 You can also feed this app existing YouTube videos and it will clip it into its individual scenes and tag the entities found in it (eg. "taco"). That allows you to later search for "taco" scenes to be used in your videos.
+
 
 ## Example Workflow
 
