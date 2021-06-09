@@ -32,8 +32,3 @@ $ npm run sandbox ./src/sandbox/your-sandbox-file.ts
 The `$ npm run export-creds` is only necessary if you plan on using the authenticated firebase client locally. The `npm run sandbox` will run `ts-node` on your sandbox typescript file, and also output the console.log to your Chrome console at `chrome://inspect/#devices` (very convinent!).
 
 Always be verifying things work in development before ever porting it over to firebase functions.
-
-## To Do
-- investigate the next part locally `process-video-metadata.api.ts` so we understand the types and functionality
-- then implement it into Firebase Functions
-- try to get proper types

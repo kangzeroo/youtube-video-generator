@@ -1,3 +1,15 @@
+/** --------------------------
+ *      DOWNLOAD YOUTUBE
+ * ---------------------------
+ * This function downloads a YouTube video when requested by a user
+ * Triggers upon HTTP call of an endpoint
+ * Client provides the URL of a YouTube video they want, video gets saved
+ *
+ * `gs://${RAW_VIDEOS_CLOUD_BUCKET_NAME}/user/${userId}/video/${videoId}/${videoId}.mp4`
+ *
+ * Note to check if the video is of a valid type and duration
+ */
+
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import ytdl from "ytdl-core";
@@ -6,7 +18,7 @@ import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/constants";
 
 const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
 
-const processYouTube = functions.https.onRequest(async (req, res) => {
+const downloadYouTube = functions.https.onRequest(async (req, res) => {
   const { url, startTime, endTime } = req.body;
   const options = {
     ...(startTime &&
@@ -58,4 +70,4 @@ const processYouTube = functions.https.onRequest(async (req, res) => {
     });
 });
 
-export default processYouTube;
+export default downloadYouTube;

@@ -11,6 +11,7 @@ const run = async (
   //   const transcriptJson = parseTranscript(json);
   //   const shotLabelJason = parseShotLabelAnnotations(json);
 
+  /* eslint-disable  @typescript-eslint/no-unused-vars */
   return new Promise((res, rej) => {
     setTimeout(() => {
       res();

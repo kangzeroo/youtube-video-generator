@@ -67,6 +67,7 @@ const run = async (): Promise<void> => {
   const client = new video.v1.VideoIntelligenceServiceClient();
   const [operation] = await client.annotateVideo(request);
   console.log("operation ", operation);
+  /* eslint-disable  @typescript-eslint/no-unused-vars */
   return new Promise((res, rej) => {
     setTimeout(() => {
       res();

@@ -1,20 +1,59 @@
+/** --------------------------
+ *      CONSTANTS
+ * ---------------------------
+ */
+
+import { protos } from "@google-cloud/video-intelligence";
+
+// default user variables
 export const USER_ID = "default-user";
-export const PLACEHOLDER_FILENAME = (() => {
-  return "missing-value-placeholder";
-})();
 
 // where we store raw videos
 export const RAW_VIDEOS_CLOUD_BUCKET = "gs://raw-videos-prod";
 export const RAW_VIDEOS_CLOUD_BUCKET_NAME = "raw-videos-prod";
+// where we store SHOT_CHANGE_DETECTION annotations
+export const SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET =
+  "gs://shot-change-annotations-88-prod";
+export const SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET_NAME =
+  "shot-change-annotations-88-prod";
+// where we store split videos
+export const SCENE_VIDEOS_CLOUD_BUCKET = "gs://split-videos-88-prod";
+export const SCENE_VIDEOS_CLOUD_BUCKET_NAME = "split-videos-88-prod";
 // where we store video thumbnails
-export const PROCESSED_VIDEOS_CLOUD_BUCKET = "gs://processed-videos-prod";
-export const PROCESSED_VIDEOS_CLOUD_BUCKET_NAME = "processed-videos-prod";
+export const VIDEO_THUMBNAILS_CLOUD_BUCKET = "gs://video-thumbnails-88-prod";
+export const VIDEO_THUMBNAILS_CLOUD_BUCKET_NAME = "video-thumbnails-88-prod";
 // where we store video metadata
 export const METADATA_VIDEOS_CLOUD_BUCKET = "gs://metadata-videos-prod";
 export const METADATA_VIDEOS_CLOUD_BUCKET_NAME = "metadata-videos-prod";
 
-// algolia
-export const ALGOLIA_APPID = "V5EOCVB518";
-export const ALGOLIA_ADMIN_APIKEY = "5adbb4f7edf100dd84cd622acdbd67cf";
-export const ALGOLIA_SEARCH_KEY = "04cd49a4741e95ef3d28c47011e31974";
-export const ALGOLIA_INDEX = "DEFAULT_INDEX";
+// list of video-intelligence services
+export const VIDEO_INTELLIGENCE_SERVICES = {
+  FEATURE_UNSPECIFIED:
+    "FEATURE_UNSPECIFIED" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  LABEL_DETECTION:
+    "LABEL_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  SHOT_CHANGE_DETECTION:
+    "SHOT_CHANGE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  EXPLICIT_CONTENT_DETECTION:
+    "EXPLICIT_CONTENT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  FACE_DETECTION:
+    "FACE_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  SPEECH_TRANSCRIPTION:
+    "SPEECH_TRANSCRIPTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  TEXT_DETECTION:
+    "TEXT_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  OBJECT_TRACKING:
+    "OBJECT_TRACKING" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  LOGO_RECOGNITION:
+    "LOGO_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  CELEBRITY_RECOGNITION:
+    "CELEBRITY_RECOGNITION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+  PERSON_DETECTION:
+    "PERSON_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
+};
+
+// valid video formats
+import type { TVideoFileExtension } from "@customTypes/types.spec";
+export const VALID_VIDEO_FORMATS = {
+  MP4: ".mp4" as unknown as TVideoFileExtension,
+};
