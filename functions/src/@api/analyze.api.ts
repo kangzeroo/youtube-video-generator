@@ -3,14 +3,15 @@
  * ---------------------------
  */
 import { protos } from "@google-cloud/video-intelligence";
-import type { IUserVideoId, ILabeledScene } from "@customTypes/types.spec";
+import type { ILabeledScene } from "@customTypes/types.spec";
 
+// PLACEHOLDER
 export const createLabeledScenesForSearch = async (
   annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse,
-  { videoId, userId, sceneId }: IUserVideoId
+  sceneId: string
 ): Promise<ILabeledScene[]> => {
-  // console.log(annotations);
-  console.log(videoId, userId, sceneId);
+  console.log(annotations);
+  console.log(sceneId);
   if (sceneId) {
     return [{ sceneId }];
   }
