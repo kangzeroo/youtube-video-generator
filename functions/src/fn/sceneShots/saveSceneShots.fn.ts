@@ -17,7 +17,6 @@ import admin from "firebase-admin";
 import fs from "fs";
 import path from "path";
 import os from "os";
-import { v4 as uuidv4 } from "uuid";
 import { protos } from "@google-cloud/video-intelligence";
 import camelize from "camelize";
 import { extractRelevantIds } from "@api/helper.api";
@@ -70,20 +69,18 @@ const saveSceneShots = functions.storage
       log("4. annotations: ", annotations);
       // Extract only scenes with annotated duration of over 2 seconds
       const minSceneDuration = 2;
-      const validScenes: protos.google.cloud.videointelligence.v1.VideoSegment[] =
-        extractValidScenes({
-          annotations,
-          minSceneDuration,
-          videoPath,
-        });
+      const validScenes = await extractValidScenes({
+        annotations,
+        minSceneDuration,
+        videoPath,
+      });
       log("5. validScene: ", validScenes);
 
       log("6. Uploading to cloud bucket... ");
       // upload each valid scene to the right cloud bucket
       await Promise.all(
-        validScenes.map(async ({ scene, scenePath }) => {
-          const sceneId = uuidv4();
-          return await uploadSceneToBucket(scene, scenePath, sceneId);
+        validScenes.map(async ({ sceneId, scenePath }) => {
+          return await uploadSceneToBucket(sceneId, scenePath);
         })
       ).catch((e) => {
         throw e;
