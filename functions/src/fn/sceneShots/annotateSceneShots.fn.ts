@@ -10,11 +10,7 @@
 
 import * as functions from "firebase-functions";
 import video from "@google-cloud/video-intelligence";
-import {
-  extractRelevantIds,
-  checkIfValidVideoFormat,
-  checkIfValidVideoLength,
-} from "@api/helper.api";
+import { extractRelevantIds, checkIfValidVideoFormat } from "@api/helper.api";
 import {
   RAW_VIDEOS_CLOUD_BUCKET,
   VIDEO_INTELLIGENCE_SERVICES,
@@ -27,30 +23,35 @@ const annotateSceneShots = functions.storage
   .bucket(RAW_VIDEOS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
-    if (object?.name) {
-      log("1. annotateSceneShots()");
-      const filePath = object?.name;
-      log("1b. filePat", filePath);
-      // only allow MP4 videos less than 20 mins long
-      const validVideoLength = await checkIfValidVideoLength(filePath);
-      if (filePath && checkIfValidVideoFormat(filePath) && validVideoLength) {
-        log("2. Requesting SHOT_CHANGE_DETECTION");
-        const { videoId, userId } = extractRelevantIds(filePath);
-        log(`2b. relevantIds: videoId=${videoId}, userId=${userId}`);
-        // specify SHOT_CHANGE_DETECTION
-        const outputUri = `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`;
-        const request = {
-          inputUri: `gs://${filePath}`,
-          outputUri,
-          features: [VIDEO_INTELLIGENCE_SERVICES.SHOT_CHANGE_DETECTION],
-        };
-        log(`2c. outputUri: ${outputUri}`);
-        // annotate the video
+    log("1. annotateSceneShots()");
+    log("1b. object: ", object);
+    const filePath = object?.name;
+    log("1c. filePath: ", filePath);
+
+    if (filePath && checkIfValidVideoFormat(filePath)) {
+      log("2. Requesting SHOT_CHANGE_DETECTION");
+      const { videoId, userId } = extractRelevantIds(filePath);
+      log(`2b. relevantIds: videoId=${videoId}, userId=${userId}`);
+      // specify SHOT_CHANGE_DETECTION
+      const outputUri = `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`;
+      const request = {
+        inputUri: `gs://${filePath}`,
+        outputUri,
+        features: [VIDEO_INTELLIGENCE_SERVICES.SHOT_CHANGE_DETECTION],
+      };
+      log(`2c. request: ${request}`);
+      // annotate the video
+      try {
         const client = new video.v1.VideoIntelligenceServiceClient();
         const [operation] = await client.annotateVideo(request);
         log("3. Completed operation: ", operation);
+      } catch (e) {
+        log(e);
+        log("3. Failed");
+        throw Error(e);
       }
     }
+    console.log("1d. Invalid file extension");
   });
 
 export default annotateSceneShots;

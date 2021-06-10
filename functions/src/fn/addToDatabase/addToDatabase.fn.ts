@@ -14,15 +14,24 @@ import { extractRelevantIds } from "@api/helper.api";
 import { createLabeledScenesForSearch } from "@api/analyze.api";
 import { METADATA_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
 
+const log = functions.logger.log;
+
 const addToDatabase = functions.storage
   .bucket(METADATA_VIDEOS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
+    log("1. addToDatabase()");
+    log("1b. object: ", object);
     const filePath = object?.name || "";
+    log("1b. filePath: ", filePath);
     const { videoId, userId, sceneId } = extractRelevantIds(filePath);
+    log(
+      `2b. relevantIds: videoId=${videoId}, userId=${userId}, sceneId=${sceneId}`
+    );
     // Locally download the json file created by the vision API
     if (filePath && sceneId) {
       // locally download the metadata json
+      log("3. Getting scene annotations");
       const tempFilePathAnnotations = path.join(os.tmpdir(), "annotations");
       await admin
         .storage()
@@ -32,12 +41,15 @@ const addToDatabase = functions.storage
       // The json is in snakecase and we must convert to camelCase to be type compatible
       const annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse =
         camelize(JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8")));
+      log("3b. Annotations: ", annotations);
       // process the labels & scenes into a queryable schema
       const labeledScenes = createLabeledScenesForSearch(annotations, {
         videoId,
         userId,
         sceneId,
       });
+      log("4. Labels: ", labeledScenes);
+      log("4b. Uploading to firestore...");
       // upload the labeled scenes to firestore
       admin.firestore().collection("scenes").doc(sceneId).set(
         {

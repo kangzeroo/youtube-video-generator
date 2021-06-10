@@ -46,12 +46,10 @@ export const extractRelevantIds = (bucketFilePath: string): IUserVideoId => {
 };
 
 export const checkIfValidVideoFormat = (bucketFilePath: string): boolean => {
-  console.log(bucketFilePath);
-  console.log(VALID_VIDEO_FORMATS);
   const fileNameAndExt = bucketFilePath.split(".");
   if (fileNameAndExt.length > 1) {
     return Object.values(VALID_VIDEO_FORMATS).includes(
-      fileNameAndExt[1] as unknown as TVideoFileExtension
+      `.${fileNameAndExt[1]}` as unknown as TVideoFileExtension
     );
   }
   return false;
@@ -61,6 +59,7 @@ export const checkIfValidVideoLength = async (
   bucketFilePath: string,
   maxDurationSeconds: number = VALID_VIDEO_LENGTH_SECONDS
 ): Promise<boolean> => {
+  console.log("checkIfValidVideoLength");
   const duration = await getVideoDuration(bucketFilePath);
   return duration <= maxDurationSeconds;
 };

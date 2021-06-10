@@ -33,6 +33,7 @@ const analyzeSceneShots = functions.storage
   .object()
   .onFinalize(async (object) => {
     log("1. analyzeSceneShots");
+    log("1b. object: ", object);
     const filePath = object?.name || "";
     log("1b. filePath: ", filePath);
     if (filePath) {

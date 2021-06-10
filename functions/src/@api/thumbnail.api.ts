@@ -48,18 +48,22 @@ export const calculateTimemarks = (duration: number): number[] => {
 
 export const getVideoDuration = async (inFilePath: string): Promise<number> => {
   return new Promise((resolve, reject) => {
-    ffmpeg.ffprobe(inFilePath, (err, metadata) => {
-      if (err) {
-        reject(err);
-      } else {
-        if (metadata) {
-          const duration = metadata.format.duration || 0;
-          resolve(duration);
+    try {
+      ffmpeg.ffprobe(inFilePath, (err, metadata) => {
+        if (err) {
+          reject(err);
         } else {
-          reject(new Error("Video missing metadata"));
+          if (metadata) {
+            const duration = metadata.format.duration || 0;
+            resolve(duration);
+          } else {
+            reject(new Error("Video missing metadata"));
+          }
         }
-      }
-    });
+      });
+    } catch (e) {
+      throw Error(e);
+    }
   });
 };
 

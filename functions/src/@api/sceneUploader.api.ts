@@ -13,6 +13,7 @@ interface TExtractValidScenesInput {
   minSceneDuration: number;
 }
 
+// PLACEHOLDER
 export const extractValidScenes = ({
   annotations,
   minSceneDuration,
@@ -30,6 +31,7 @@ export const extractValidScenes = ({
   ];
 };
 
+// PLACEHOLDER
 export const uploadSceneToBucket = async (
   sceneSegment: protos.google.cloud.videointelligence.v1.VideoSegment,
   videoPath: string,

@@ -9,7 +9,7 @@ export const createLabeledScenesForSearch = async (
   annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse,
   { videoId, userId, sceneId }: IUserVideoId
 ): Promise<ILabeledScene[]> => {
-  console.log(annotations);
+  // console.log(annotations);
   console.log(videoId, userId, sceneId);
   if (sceneId) {
     return [{ sceneId }];

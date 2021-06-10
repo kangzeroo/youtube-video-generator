@@ -17,7 +17,8 @@
     "typeRoots" : ["./node_modules/@types", "src/@customTypes"]
   },
   "ts-node": {
-    "files": true
+    "files": true,
+    "require": ["tsconfig-paths/register"]
   },
   "compileOnSave": true,
   "include": [
