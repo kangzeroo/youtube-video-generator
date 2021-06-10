@@ -2,7 +2,7 @@
  *      ANALYZE SCENE SHOTS
  * ---------------------------
  *  Inbound scene video
- *  `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`
+ *  `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/scene/${sceneId}/${sceneId}.mp4`
  *
  *  Outbound thumbnails
  *  `gs://${VIDEO_THUMBNAILS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/thumbnail/thumbnail-${sceneId}.png`

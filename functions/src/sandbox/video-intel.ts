@@ -1,6 +1,6 @@
-// import * as serviceAccount from "./firebase-serviceAccountKey.json";
 import admin from "firebase-admin";
 import video, { protos } from "@google-cloud/video-intelligence";
+// import * as serviceAccount from "./firebase-serviceAccountKey.json";
 // const params = {
 //   type: serviceAccount.type,
 //   projectId: serviceAccount.project_id,

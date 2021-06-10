@@ -46,9 +46,9 @@ const saveSceneShots = functions.storage
       // Get the identifying information
       const videoName = `user/${userId}/video/${videoId}/${videoId}.mp4`;
       // Locally download the video file
-      log("2. Downloading the video...");
+      log("2b. Downloading the video...");
       const videoPath = path.join(os.tmpdir(), "video");
-      log("2. videoPath: ", videoPath);
+      log("2c. videoPath: ", videoPath);
       await admin
         .storage()
         .bucket(RAW_VIDEOS_CLOUD_BUCKET)
@@ -74,15 +74,16 @@ const saveSceneShots = functions.storage
         extractValidScenes({
           annotations,
           minSceneDuration,
+          videoPath,
         });
       log("5. validScene: ", validScenes);
 
       log("6. Uploading to cloud bucket... ");
       // upload each valid scene to the right cloud bucket
       await Promise.all(
-        validScenes.map(async (scene) => {
+        validScenes.map(async ({ scene, scenePath }) => {
           const sceneId = uuidv4();
-          return await uploadSceneToBucket(scene, videoPath, sceneId);
+          return await uploadSceneToBucket(scene, scenePath, sceneId);
         })
       ).catch((e) => {
         throw e;
