@@ -36,5 +36,6 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 Always be verifying things work in development before ever porting it over to firebase functions.
 
 ## To Do
-1. Test it in production
+1. Add service key to cloud function so it can [access video-intelligence api](https://stackoverflow.com/questions/58182291/google-video-intelligence-operation)
 2. Move out API keys to environment variables
+3. Test it in production

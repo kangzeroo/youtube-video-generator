@@ -39,7 +39,7 @@ const annotateSceneShots = functions.storage
         outputUri,
         features: [VIDEO_INTELLIGENCE_SERVICES.SHOT_CHANGE_DETECTION],
       };
-      log(`2c. request: ${request}`);
+      log(`2c. request: ${JSON.stringify(request)}`);
       // annotate the video
       try {
         const client = new video.v1.VideoIntelligenceServiceClient();
