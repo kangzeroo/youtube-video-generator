@@ -1,54 +1,45 @@
 import _ from "lodash";
+// import { calculateTimemarks } from "@api/thumbnail.api";
 
 export const calculateTimemarks = (duration: number): number[] => {
+  let timeStep = 1;
+  let timemarks: number[] = [];
   if (duration <= 2) {
     return [parseFloat((duration / 2).toFixed(1))];
   } else if (duration <= 5) {
     const numThumbnails = 2;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 10) {
     const numThumbnails = 4;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 30) {
     const numThumbnails = 5;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 60) {
     const numThumbnails = 6;
-    const timeStep = Math.floor(duration / numThumbnails);
-    return _.uniq(
-      Array.from(Array(numThumbnails).keys())
-        .map((idx) => 1 + idx * timeStep)
-        .filter((t) => t < duration)
-    );
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
+  } else {
+    const numThumbnails = 7;
+    timeStep = Math.floor(duration / numThumbnails);
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   }
-  const numThumbnails = 7;
-  const timeStep = Math.floor(duration / numThumbnails);
   return _.uniq(
-    Array.from(Array(numThumbnails).keys())
-      .map((idx) => 1 + idx * timeStep)
-      .filter((t) => t < duration)
+    timemarks.map((idx) => 1 + idx * timeStep).filter((t) => t < duration)
   );
 };
 
-[0.01, 0.1, 1, 1.5, 2.5, 3, 5, 7, 10, 15, 30, 60, 120].forEach((duration) => {
-  console.log(`
+[0.01, 0.1, 1, 1.5, 2.5, 3, 4.744, 5, 7, 10, 15, 30, 60, 120].forEach(
+  (duration) => {
+    console.log(`
     -----
     input duration: ${duration}
     output timestamps: ${calculateTimemarks(duration)}
 `);
-});
+  }
+);
+
+// $ npm run sandbox ./src/sandbox/calculateTimemarks.ts

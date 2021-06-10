@@ -17,29 +17,29 @@ to outDirectory and outFile */
 // REFACTOR: unnecessarily convoluted
 export const calculateTimemarks = (duration: number): number[] => {
   let timeStep = 1;
-  const timemarks: number[] = [];
+  let timemarks: number[] = [];
   if (duration <= 2) {
     return [parseFloat((duration / 2).toFixed(1))];
   } else if (duration <= 5) {
     const numThumbnails = 2;
     timeStep = Math.floor(duration / numThumbnails);
-    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 10) {
     const numThumbnails = 4;
     timeStep = Math.floor(duration / numThumbnails);
-    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 30) {
     const numThumbnails = 5;
     timeStep = Math.floor(duration / numThumbnails);
-    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else if (duration <= 60) {
     const numThumbnails = 6;
     timeStep = Math.floor(duration / numThumbnails);
-    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   } else {
     const numThumbnails = 7;
     timeStep = Math.floor(duration / numThumbnails);
-    timemarks.concat(Array.from(Array(numThumbnails).keys()));
+    timemarks = timemarks.concat(Array.from(Array(numThumbnails).keys()));
   }
   return _.uniq(
     timemarks.map((idx) => 1 + idx * timeStep).filter((t) => t < duration)
@@ -47,6 +47,7 @@ export const calculateTimemarks = (duration: number): number[] => {
 };
 
 export const getVideoDuration = async (inFilePath: string): Promise<number> => {
+  console.log("getVideoDuration()");
   return new Promise((resolve, reject) => {
     try {
       ffmpeg.ffprobe(inFilePath, (err, metadata) => {
@@ -62,6 +63,7 @@ export const getVideoDuration = async (inFilePath: string): Promise<number> => {
         }
       });
     } catch (e) {
+      console.log(JSON.stringify(e));
       throw Error(e);
     }
   });
@@ -72,10 +74,14 @@ export const extractPreviewImage = async (
   outDir: string,
   width = 320
 ): Promise<string[]> => {
+  console.log("extractPreviewImage()");
   const savedFileNames: string[] = [];
   try {
     const duration = await getVideoDuration(inFilePath);
+    console.log("duration: ", JSON.stringify(duration));
     const timemarks = calculateTimemarks(duration);
+    console.log("timemarks: ", JSON.stringify(timemarks));
+    console.log("ffmpeg()");
     const cmd = ffmpeg(inFilePath)
       .on("filenames", (filenames) => {
         console.log("Will generate " + filenames.join(", "));

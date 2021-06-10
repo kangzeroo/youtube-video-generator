@@ -35,7 +35,7 @@ const annotateSceneShots = functions.storage
       // specify SHOT_CHANGE_DETECTION
       const outputUri = `gs://${SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/${videoId}.json`;
       const request = {
-        inputUri: `gs://${filePath}`,
+        inputUri: `gs://${RAW_VIDEOS_CLOUD_BUCKET}/${filePath}`,
         outputUri,
         features: [VIDEO_INTELLIGENCE_SERVICES.SHOT_CHANGE_DETECTION],
       };
@@ -50,8 +50,9 @@ const annotateSceneShots = functions.storage
         log("3. Failed");
         throw Error(e);
       }
+    } else {
+      console.log("1d. Invalid file extension");
     }
-    console.log("1d. Invalid file extension");
   });
 
 export default annotateSceneShots;

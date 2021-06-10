@@ -30,9 +30,14 @@ import {
 } from "@constants/constants";
 
 const log = functions.logger.log;
+const runtimeOpts = {
+  timeoutSeconds: 300,
+  memory: "1GB" as "1GB",
+};
 
-const saveSceneShots = functions.storage
-  .bucket(SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET)
+const saveSceneShots = functions
+  .runWith(runtimeOpts)
+  .storage.bucket(SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
     log("1. saveSceneShots()");
@@ -85,6 +90,7 @@ const saveSceneShots = functions.storage
       ).catch((e) => {
         throw e;
       });
+      log("7. Saved all scenes to cloud bucket!");
     }
   });
 
