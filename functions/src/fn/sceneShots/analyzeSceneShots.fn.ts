@@ -51,33 +51,33 @@ const analyzeSceneShots = functions
         .file(filePath)
         .download({ destination: tempVideoPath });
       const { sceneId } = extractRelevantIds(filePath);
-
       log(`2b. relevantIds: sceneId=${sceneId}`);
+
       // Generate thumbnails from scene
       fs.statSync(tempVideoPath);
       const fileNames: string[] = [];
-      const tempPath = os.tmpdir();
+      const tempThumbnailsPath = os.tmpdir();
       try {
         const names: string[] = await extractPreviewImage(
           tempVideoPath,
-          tempPath
+          tempThumbnailsPath
         );
         names.forEach((n) => fileNames.push(n));
       } catch (err) {
         log(err);
         throw Error(err);
       }
-      log(`3. fileNames: ${fileNames}`);
+      log(`3. fileNames ${typeof fileNames}: ${fileNames}`);
       if (fileNames.length > 0 && sceneId) {
         // save thumbnails to cloud storage
         log("3b. Saving thumbnails to cloud storage...");
         const savedThumbnails = await Promise.all(
-          fileNames.map(async (idx, name) => {
+          fileNames.map(async (name, idx) => {
             const destination = `scene/${sceneId}/thumbnail/thumbnail-${idx}-${sceneId}.png`;
             await admin
               .storage()
               .bucket(VIDEO_THUMBNAILS_CLOUD_BUCKET)
-              .upload(`${tempPath}/${name}`, {
+              .upload(`${tempThumbnailsPath}/${name}`, {
                 destination,
               });
             return destination;
@@ -85,7 +85,7 @@ const analyzeSceneShots = functions
         );
         log("4. Saving thumbnails to firestore...");
         // save thumbnail scene references to firestore
-        admin.firestore().collection("scenes").doc(sceneId).set(
+        await admin.firestore().collection("scenes").doc(sceneId).set(
           {
             thumbnails: savedThumbnails,
           },
@@ -93,15 +93,9 @@ const analyzeSceneShots = functions
         );
         log("4b. Finished saving thumbnails to firestore");
         // clean up links
-        // fs.unlinkSync(tempVideoPath);
-        // fileNames.forEach((name) => {
-        //   fs.unlinkSync(`${os.tmpdir()}/${name}`);
-        // });
+        fs.unlinkSync(tempVideoPath);
       } else {
-        // fs.unlinkSync(tempVideoPath);
-        // fileNames.forEach((name) => {
-        //   fs.unlinkSync(`${os.tmpdir()}/${name}`);
-        // });
+        fs.unlinkSync(tempVideoPath);
         throw Error("Failed to generate thumbnails, no names");
       }
 

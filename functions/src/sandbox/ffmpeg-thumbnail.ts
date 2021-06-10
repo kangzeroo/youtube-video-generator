@@ -62,3 +62,5 @@ export const makePreviewImages = async (): Promise<void> => {
 };
 
 makePreviewImages();
+
+// $ npm run sandbox ./src/sandbox/ffmpeg-thumbnail.ts

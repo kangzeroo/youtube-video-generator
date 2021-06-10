@@ -10,9 +10,6 @@ import ffmpeg from "fluent-ffmpeg";
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
-/* Creates a preview image from the file at inFilePath written
-to outDirectory and outFile */
-
 // show more thumbnails for longer videos
 // REFACTOR: unnecessarily convoluted
 export const calculateTimemarks = (duration: number): number[] => {
@@ -86,6 +83,7 @@ export const extractPreviewImage = async (
       .on("filenames", (filenames) => {
         console.log("Will generate " + filenames.join(", "));
         filenames.forEach((n: string) => savedFileNames.push(n));
+        console.log("savedFileNames... ", JSON.stringify(savedFileNames));
       })
       .screenshots({
         timemarks: timemarks,
@@ -95,6 +93,8 @@ export const extractPreviewImage = async (
 
     return new Promise((resolve, reject) => {
       cmd.on("end", () => {
+        console.log("Resolving thumbnail generation!");
+        savedFileNames.forEach((f) => console.log(`iiii. ${f}`));
         resolve(savedFileNames);
       });
       cmd.on("error", reject);
