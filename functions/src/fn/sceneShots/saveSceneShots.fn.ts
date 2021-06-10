@@ -23,10 +23,12 @@ import { extractRelevantIds } from "@api/helper.api";
 import {
   extractValidScenes,
   uploadSceneToBucket,
+  saveSceneToFirestore,
 } from "@api/sceneUploader.api";
 import {
   RAW_VIDEOS_CLOUD_BUCKET,
   SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET,
+  SCENE_VIDEOS_CLOUD_BUCKET,
 } from "@constants/constants";
 
 const log = functions.logger.log;
@@ -82,10 +84,16 @@ const saveSceneShots = functions
       log("5. validScene: ", validScenes);
 
       log("6. Uploading to cloud bucket... ");
-      // upload each valid scene to the right cloud bucket
+      // upload each valid scene to the right cloud bucket and save reference in firestore
       await Promise.all(
         validScenes.map(async ({ sceneId, scenePath }) => {
-          return await uploadSceneToBucket(sceneId, scenePath);
+          const destination = await uploadSceneToBucket(sceneId, scenePath);
+          await saveSceneToFirestore({
+            destination: `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/${destination}`,
+            sceneId,
+            userId,
+            videoId,
+          });
         })
       ).catch((e) => {
         throw e;

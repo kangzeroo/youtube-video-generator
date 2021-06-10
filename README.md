@@ -43,6 +43,8 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 Always be verifying things work in development before ever porting it over to firebase functions.
 
 ## To Do
-1. Fix `analyzeSceneShots` Error: ENOENT: no such file or directory, stat '/tmp/0'. Might be related to fs.readFile [race condition](https://stackoverflow.com/questions/60984659/error-enoent-no-such-file-or-directory-even-when-file-exists-in-firebase-cloud)
-2. Move out dev API keys to environment variables
-3. Test it in production
+1. Finish `functions/src/fn/addToDatabase/addToDatabase.fn.ts`
+2. Add firestore.save() when a user uploads a raw source video
+3. Clean up code to be more readable
+4. Move out dev API keys to firebase-style environment variables
+5. Test it in production

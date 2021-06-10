@@ -92,13 +92,43 @@ export const extractValidScenes = async ({
 export const uploadSceneToBucket = async (
   sceneId: TSceneId,
   scenePath: string
-): Promise<void> => {
+): Promise<string> => {
   console.log(sceneId);
   console.log(scenePath);
   const destination = `scene/${sceneId}/${sceneId}.mp4`;
   await admin.storage().bucket(SCENE_VIDEOS_CLOUD_BUCKET).upload(scenePath, {
     destination,
   });
+  return destination;
+};
+
+interface ISceneSave {
+  sceneId: string;
+  userId: string;
+  videoId: string;
+  destination: string;
+}
+export const saveSceneToFirestore = async ({
+  sceneId,
+  userId,
+  videoId,
+  destination,
+}: ISceneSave): Promise<void> => {
+  await admin.firestore().collection("scenes").doc(sceneId).set(
+    {
+      sceneId,
+      originalUploaderId: userId,
+      originalVideoId: videoId,
+      destinationStorageUrl: destination,
+    },
+    { merge: true }
+  );
+  return;
+};
+
+// PLACEHOLDER
+// save firestore record of user uploading a raw source video
+export const recordVideoUploadedByUser = async (): Promise<void> => {
   return;
 };
 

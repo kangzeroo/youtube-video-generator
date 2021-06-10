@@ -24,10 +24,8 @@ const addToDatabase = functions.storage
     log("1b. object: ", object);
     const filePath = object?.name || "";
     log("1b. filePath: ", filePath);
-    const { videoId, userId, sceneId } = extractRelevantIds(filePath);
-    log(
-      `2b. relevantIds: videoId=${videoId}, userId=${userId}, sceneId=${sceneId}`
-    );
+    const { sceneId } = extractRelevantIds(filePath);
+    log(`2b. relevantIds: sceneId=${sceneId}`);
     // Locally download the json file created by the vision API
     if (filePath && sceneId) {
       // locally download the metadata json
@@ -43,11 +41,7 @@ const addToDatabase = functions.storage
         camelize(JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8")));
       log("3b. Annotations: ", annotations);
       // process the labels & scenes into a queryable schema
-      const labeledScenes = createLabeledScenesForSearch(annotations, {
-        videoId,
-        userId,
-        sceneId,
-      });
+      const labeledScenes = createLabeledScenesForSearch(annotations, sceneId);
       log("4. Labels: ", labeledScenes);
       log("4b. Uploading to firestore...");
       // upload the labeled scenes to firestore
