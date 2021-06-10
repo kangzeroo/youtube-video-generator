@@ -37,7 +37,8 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
   // ytdl() --> createWriteStream()
   // https://github.com/fent/node-ytdl-core
   // https://googleapis.dev/nodejs/storage/latest/File.html#createWriteStream
-  const destinationPath = `user/${USER_ID}/video/${uuidv4()}.mp4`;
+  const videoId = uuidv4();
+  const destinationPath = `user/${USER_ID}/video/${videoId}/${videoId}.mp4`;
   const file = bucket.file(destinationPath);
 
   // allow private access to this file using a "download token"

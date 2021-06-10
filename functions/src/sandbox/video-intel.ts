@@ -1,6 +1,6 @@
-// import * as serviceAccount from "./firebase-serviceAccountKey.json";
 import admin from "firebase-admin";
 import video, { protos } from "@google-cloud/video-intelligence";
+// import * as serviceAccount from "./firebase-serviceAccountKey.json";
 // const params = {
 //   type: serviceAccount.type,
 //   projectId: serviceAccount.project_id,
@@ -43,30 +43,35 @@ const featureList = {
     "PERSON_DETECTION" as unknown as protos.google.cloud.videointelligence.v1.Feature,
 };
 
-const videoContext = {
-  speechTranscriptionConfig: {
-    languageCode: "en-US",
-    enableAutomaticPunctuation: true,
-  },
-};
+// const videoContext = {
+//   speechTranscriptionConfig: {
+//     languageCode: "en-US",
+//     enableAutomaticPunctuation: true,
+//   },
+// };
 
 const request = {
   inputUri:
-    "gs://raw-videos-prod/default-user/raw-youtube/b63fed12-c7d4-49ca-ba06-84b0ad934c73.mp4",
-  outputUri: "gs://metadata-videos-prod/dev-user/video-id/video-id.json",
+    "gs://raw-videos-prod/user/default-user/video/c51230ca-a53d-43a0-9ece-8123065ffefd/c51230ca-a53d-43a0-9ece-8123065ffefd.mp4",
+  outputUri:
+    "gs://shot-change-annotations-88-prod/user/default-user/video/c51230ca-a53d-43a0-9ece-8123065ffefd/c51230ca-a53d-43a0-9ece-8123065ffefd.json",
   features: [
-    featureList.LABEL_DETECTION,
-    featureList.SPEECH_TRANSCRIPTION,
+    // featureList.LABEL_DETECTION,
+    // featureList.SPEECH_TRANSCRIPTION,
     featureList.SHOT_CHANGE_DETECTION,
   ],
-  videoContext: videoContext,
+  // videoContext: videoContext,
 };
 
 const run = async (): Promise<void> => {
   console.log("request ", request);
-  const client = new video.v1.VideoIntelligenceServiceClient();
-  const [operation] = await client.annotateVideo(request);
-  console.log("operation ", operation);
+  try {
+    const client = new video.v1.VideoIntelligenceServiceClient();
+    const [operation] = await client.annotateVideo(request);
+    console.log("operation ", operation);
+  } catch (e) {
+    throw Error(e);
+  }
   /* eslint-disable  @typescript-eslint/no-unused-vars */
   return new Promise((res, rej) => {
     setTimeout(() => {
@@ -76,3 +81,5 @@ const run = async (): Promise<void> => {
 };
 
 run();
+
+// $ npm run sandbox ./src/sandbox/video-intel.ts

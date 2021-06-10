@@ -1,21 +1,28 @@
 # YouTube Video Generator
 
-![demo](./readme-image.jpg)
+![demo](./assets/readme-image.jpg)
 
 This app turns text into a YouTube video. Multiple scenes are generated based on text keywords or phrases you select, such as "dog chasing ball". If you don't like a scene, the app will offer alternatives until you are satisfied. 
 
-Use this app to quickly generate video content in bulk. This is a better alternative to www.Lumen5.com which does not allow you to pick which word/phrases to generate scenes from.
+Use this app to quickly generate video content in bulk. This is a better alternative to www.Lumen5.com which does not allow you to pick which word/phrases to generate scenes from, nor allow you to upload your own source videos.
 
-You can also feed this app existing YouTube videos and it will clip it into its individual scenes and tag the entities found in it (eg. "taco"). One 10 min video might get split out into 50+ individual scenes. That allows you to later search for "taco" scenes to be used in your videos.
+You can upload your own source file and it will clip it into its individual scenes and tag the entities found in it (eg. "taco"). One 10 min video might get split out into 50+ individual scenes. That allows you to later search for "taco" scenes to be used in your videos.
+
+This is an internal tool intended for use within Kangzeroo's VA team 💅💪
 
 
 ## Example Workflow
 
-1. You want to use a 5 second clip of a car chase in your YouTube video. You search "police car chase" with this tool. You can also search by audio, so for example if in a video someone is saying "police" but no police car is in the video itself, you will still see results with a police car chase.
+![demo](./assets/film-reel.jpg)
 
-2. A list of 5-10 second car chase scenes are shown to you, with thumbnails to quickly scan through the library. If you can't find what you're looking for, you can also feed this tool an existing YouTube video url and it will download the video, clip it into its independent scenes, and add metadata to make it searchable next time.
 
-3. You download the clip you want and viola! Use it however you wish. Note that this is a video generator not editor, it simply helps with media sourcing. You'll still need to use a dedicated video editor like Adobe Premier.
+1. Paste in your text script and highlight the words or phrases you want to generate scenes from. For example, the phrase "high speed car chase".
+
+2. The app will return your multiple 5 second clips of a car chase for you to pick from. You can also search by audio, so for example if in a video someone is saying "police" in a scene, that will appear too. Searching by video text is also possible. So if you search for "webull", you may also see a physical advertisement banner for WeBull in a boxing match.
+
+3. If you can't find what you're looking for, you can also feed this tool an existing video and it will download the video, clip it into its independent scenes, and add metadata to make it searchable next time. Typically a 10 min video will get split out into 50+ individual scenes.
+
+4. You download the clip you want and viola! Use it however you wish. Note that this is a video generator not editor, it simply helps with tedious media sourcing. You'll still need to use a dedicated video editor like Adobe Premier.
 
 ## Limitations
 
@@ -36,5 +43,6 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 Always be verifying things work in development before ever porting it over to firebase functions.
 
 ## To Do
-1. Test it in production
-2. Move out API keys to environment variables
+1. Fix `analyzeSceneShots` Error: ENOENT: no such file or directory, stat '/tmp/0'. Might be related to fs.readFile [race condition](https://stackoverflow.com/questions/60984659/error-enoent-no-such-file-or-directory-even-when-file-exists-in-firebase-cloud)
+2. Move out dev API keys to environment variables
+3. Test it in production

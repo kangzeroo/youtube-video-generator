@@ -33,6 +33,8 @@ module.exports = {
     "new-cap": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "operator-linebreak": "off",
+    "@typescript-eslint/prefer-as-const": "off",
     // while in dev
     // "no-unused-vars": 0,
     // "@typescript-eslint/no-unused-vars": ["off"],
