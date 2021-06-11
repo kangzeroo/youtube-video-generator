@@ -62,6 +62,15 @@ gcloud config unset auth/impersonate_service_account
 
 [Click here to view the full spreadsheet](https://docs.google.com/spreadsheets/d/1PahIgWfpDr5yOXBfUPKXhtOMWBgpnYiYYs2ABJZMHBc/edit?usp=sharing)
 
+```
+# Video Scene Sample Cost (Simplified)
+
+1 video --> 50 scenes --> $0
+10 video --> 500 scenes --> $0
+100 video --> 5000 scenes --> $0
+200 video --> 10,000 scenes --> $104
+2000 video --> 100,000 scenes --> $1872
+```
 
 
 ## To Do
