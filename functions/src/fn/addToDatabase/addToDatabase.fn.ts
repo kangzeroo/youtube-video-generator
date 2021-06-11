@@ -41,13 +41,13 @@ const addToDatabase = functions.storage
         camelize(JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8")));
       log("3b. Annotations: ", annotations);
       // process the labels & scenes into a queryable schema
-      const labeledScenes = createLabeledScenesForSearch(annotations, sceneId);
-      log("4. Labels: ", labeledScenes);
+      const annotatedLabels = await createLabeledScenesForSearch(annotations);
+      log("4. Labels: ", annotatedLabels);
       log("4b. Uploading to firestore...");
       // upload the labeled scenes to firestore
       admin.firestore().collection("scenes").doc(sceneId).set(
         {
-          scenes: labeledScenes,
+          labels: annotatedLabels,
         },
         { merge: true }
       );

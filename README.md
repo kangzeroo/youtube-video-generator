@@ -42,8 +42,23 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 
 Always be verifying things work in development before ever porting it over to firebase functions.
 
+## Advanced Auth
+Upon initial setup, you may need to impersonate an authorized service account IAM in order to access certain Google Cloud APIs. To do so, run the below command:
+
+```
+$ gcloud config set auth/impersonate_service_account [SA_FULL_EMAIL]
+```
+
+In our case the [SA_FULL_EMAIL] is `youtube-backend-dev-kz@video-entropy.iam.gserviceaccount.com`, but you will need to request an admin to grant your google account access to this service account.
+
+If you want to clear that IAM impersonation:
+```
+gcloud config unset auth/impersonate_service_account
+```
+
 ## To Do
 1. Finish `functions/src/fn/addToDatabase/addToDatabase.fn.ts`
+1b. Test the quality of labelling on a full video vs short scene
 2. Add firestore.save() when a user uploads a raw source video
 3. Clean up code to be more readable
 4. Move out dev API keys to firebase-style environment variables

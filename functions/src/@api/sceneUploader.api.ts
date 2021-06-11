@@ -60,7 +60,7 @@ export const extractValidScenes = async ({
       return annotation.reference.durationInSecondsNanos > minSceneDuration;
     });
   // REPLACE IN PRODUCTION (remove subset)
-  const subset = allValidTimeRanges.slice(0, 2);
+  const subset = allValidTimeRanges.slice(0, 10);
   const scenes = await Promise.all(
     subset.map(async (timerange): Promise<ISceneReference> => {
       const sceneId = `scene-${uuidv4()}`;

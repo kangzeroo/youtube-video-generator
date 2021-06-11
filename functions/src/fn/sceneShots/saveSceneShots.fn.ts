@@ -75,7 +75,7 @@ const saveSceneShots = functions
 
       log("4. annotations: ", annotations);
       // Extract only scenes with annotated duration of over 2 seconds
-      const minSceneDuration = 2;
+      const minSceneDuration = 1.5;
       const validScenes = await extractValidScenes({
         annotations,
         minSceneDuration,

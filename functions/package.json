@@ -8,7 +8,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy",
     "logs": "firebase functions:log",
-    "export-creds": "export GOOGLE_APPLICATION_CREDENTIALS=\"/Users/kangzeroo/Projects/YouTube-Entropy/functions/src/sandbox/firebase-serviceAccountKey.json\"",
+    "export-creds": "export GOOGLE_APPLICATION_CREDENTIALS=/Users/kangzeroo/Projects/YouTube-Entropy/functions/src/sandbox/firebase-serviceAccountKey.json",
     "sandbox": "npm run export-creds && node --inspect -r ts-node/register"
   },
   "engines": {
