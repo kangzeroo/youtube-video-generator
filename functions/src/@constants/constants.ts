@@ -53,3 +53,4 @@ export const VALID_VIDEO_FORMATS = {
 };
 export const VALID_VIDEO_LENGTH_SECONDS = 60 * 20;
 export const MIN_SCENE_DURATION = 2;
+export const MAX_SCENE_DURATION = 15;

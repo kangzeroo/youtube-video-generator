@@ -18,8 +18,11 @@ import fs from "fs";
 import path from "path";
 import os from "os";
 import { protos } from "@google-cloud/video-intelligence";
+import {
+  generateStorageUrlWithDownloadToken,
+  extractRelevantIds,
+} from "@api/helper.api";
 import camelize from "camelize";
-import { extractRelevantIds } from "@api/helper.api";
 import {
   extractValidScenes,
   uploadSceneToBucket,
@@ -29,12 +32,14 @@ import {
   RAW_VIDEOS_CLOUD_BUCKET,
   SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET,
   MIN_SCENE_DURATION,
+  MAX_SCENE_DURATION,
+  SCENE_VIDEOS_CLOUD_BUCKET,
 } from "@constants/constants";
 
 const log = functions.logger.log;
 const runtimeOpts = {
-  timeoutSeconds: 300,
-  memory: "1GB" as "1GB",
+  timeoutSeconds: 540,
+  memory: "4GB" as "4GB",
 };
 
 const saveSceneShots = functions
@@ -51,24 +56,32 @@ const saveSceneShots = functions
       log(`2. relevantIds: videoId=${videoId}, userId=${userId}`);
       // Get the identifying information
       const videoName = `user/${userId}/video/${videoId}/${videoId}.mp4`;
-      // Locally download the video file
+      // Prepare to locally download the video file
       log("2b. Downloading the video...");
       const videoPath = path.join(os.tmpdir(), "video");
       log("2c. videoPath: ", videoPath);
-      await admin
-        .storage()
-        .bucket(RAW_VIDEOS_CLOUD_BUCKET)
-        .file(videoName)
-        .download({ destination: videoPath });
-      // Locally download the json file created by the vision API
+
+      // Prepare to locally download the json file created by the vision API
       log("3. Downloading the json annotations...");
       const tempFilePathAnnotations = path.join(os.tmpdir(), "annotations");
       log("3b. annotationsPath: ", tempFilePathAnnotations);
-      await admin
-        .storage()
-        .bucket(object.bucket)
-        .file(filePath)
-        .download({ destination: tempFilePathAnnotations });
+
+      // Actually download both the video & json in parallel
+      await Promise.all([
+        // video
+        await admin
+          .storage()
+          .bucket(RAW_VIDEOS_CLOUD_BUCKET)
+          .file(videoName)
+          .download({ destination: videoPath }),
+        // json
+        await admin
+          .storage()
+          .bucket(object.bucket)
+          .file(filePath)
+          .download({ destination: tempFilePathAnnotations }),
+      ]);
+
       // The json is in snakecase and we must convert to camelCase to be type compatible
       const annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse =
         camelize(JSON.parse(fs.readFileSync(tempFilePathAnnotations, "utf-8")));
@@ -78,26 +91,35 @@ const saveSceneShots = functions
       const validScenes = await extractValidScenes({
         annotations,
         minSceneDuration: MIN_SCENE_DURATION,
+        maxSceneDuration: MAX_SCENE_DURATION,
         videoPath,
       });
       log("5. validScene: ", validScenes);
 
       log("6. Uploading to cloud bucket... ");
       // upload each valid scene to the right cloud bucket and save reference in firestore
+      const totalScenes = validScenes.length;
       await Promise.all(
-        validScenes.map(async ({ sceneId, scenePath }) => {
-          const publicUrl = await uploadSceneToBucket({
-            userId,
-            videoId,
-            sceneId,
-            scenePath,
-          });
-          await saveSceneToFirestore({
-            publicUrl,
-            sceneId,
-            userId,
-            videoId,
-          });
+        validScenes.map(async ({ sceneId, scenePath }, index) => {
+          console.log(`Uploading scene #${index + 1} of ${totalScenes}`);
+          const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
+          const { publicUrl } = generateStorageUrlWithDownloadToken(
+            SCENE_VIDEOS_CLOUD_BUCKET,
+            destination
+          );
+          // upload both at once - file storage and database
+          await Promise.all([
+            await uploadSceneToBucket({
+              scenePath,
+              destination,
+            }),
+            await saveSceneToFirestore({
+              publicUrl,
+              sceneId,
+              userId,
+              videoId,
+            }),
+          ]);
         })
       ).catch((e) => {
         throw e;

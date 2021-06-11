@@ -74,10 +74,13 @@ gcloud config unset auth/impersonate_service_account
 
 
 ## To Do
-1. Move the scene saving to upload in parallel
-2. Consider refactoring the order of video annotation to save costs (since shot detection is free with labeling)
-3. Clean up code to be more readable
-4. Move out dev API keys to firebase-style environment variables
-5. Test it in production
-6. Write tests when ironed out
-7. Consider upvote & downvote on scenes so that we dont get a lot of garbage scenes
+1. Add quick frontend to query by tag and display videos
+1. Clean up code to be more readable
+2. Move out dev API keys to firebase-style environment variables
+3. Write tests when ironed out
+4. Consider upvote & downvote on scenes so that we can delete garbage scenes
+
+## Optimizations
+- Consider refactoring the order of video annotation to save costs (since shot detection is free with labeling)
+- Consider allowing editing tags so that team can improve video selection
+- Consider allowing team to delete videos
