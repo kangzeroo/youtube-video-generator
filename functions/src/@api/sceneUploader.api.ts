@@ -63,9 +63,9 @@ export const extractValidScenes = async ({
       return annotation.reference.durationInSecondsNanos > minSceneDuration;
     });
   // REPLACE IN PRODUCTION (remove subset)
-  const subset = allValidTimeRanges.slice(0, 10);
+  // const subset = allValidTimeRanges.slice(0, 10);
   const scenes = await Promise.all(
-    subset.map(async (timerange): Promise<ISceneReference> => {
+    allValidTimeRanges.map(async (timerange): Promise<ISceneReference> => {
       const sceneId = `scene-${uuidv4()}`;
       const scenePath = path.join(os.tmpdir(), `${sceneId}.mp4`);
       return new Promise((resolve, reject) => {
@@ -136,12 +136,6 @@ export const saveSceneToFirestore = async ({
     },
     { merge: true }
   );
-  return;
-};
-
-// PLACEHOLDER
-// save firestore record of user uploading a raw source video
-export const recordVideoUploadedByUser = async (): Promise<void> => {
   return;
 };
 

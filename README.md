@@ -56,6 +56,14 @@ If you want to clear that IAM impersonation:
 gcloud config unset auth/impersonate_service_account
 ```
 
+## Cost Calculations
+
+![costs](./assets/cost-calculations.jpg)
+
+[Click here to view the full spreadsheet](https://docs.google.com/spreadsheets/d/1PahIgWfpDr5yOXBfUPKXhtOMWBgpnYiYYs2ABJZMHBc/edit?usp=sharing)
+
+
+
 ## To Do
 3. Clean up code to be more readable
 4. Move out dev API keys to firebase-style environment variables
