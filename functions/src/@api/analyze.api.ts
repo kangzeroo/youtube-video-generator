@@ -19,3 +19,15 @@ export const createLabeledScenesForSearch = async (
     }, [] as protos.google.cloud.videointelligence.v1.ILabelAnnotation[]);
   return allLabels;
 };
+
+export const compileLabels = (
+  annotatedLabels: protos.google.cloud.videointelligence.v1.ILabelAnnotation[]
+): string[] => {
+  const labels: string[] = [];
+  annotatedLabels.map((annotation) => {
+    if (annotation.entity && annotation.entity.description) {
+      labels.push(annotation.entity?.description);
+    }
+  });
+  return labels;
+};

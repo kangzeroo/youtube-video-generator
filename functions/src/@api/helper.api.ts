@@ -3,6 +3,7 @@
  * ---------------------------
  */
 
+import { v4 as uuidv4 } from "uuid";
 import {
   VALID_VIDEO_FORMATS,
   VALID_VIDEO_LENGTH_SECONDS,
@@ -62,6 +63,20 @@ export const checkIfValidVideoLength = async (
   console.log("checkIfValidVideoLength");
   const duration = await getVideoDuration(bucketFilePath);
   return duration <= maxDurationSeconds;
+};
+
+// allow private access to this file using a "download token"
+// https://weekly.elfitz.com/2020/06/03/make-your-firebase-storage-files-available-on-upload/
+export const generateStorageUrlWithDownloadToken = (
+  bucketName: string,
+  destinationPath: string,
+  downloadToken?: string
+): { publicUrl: string; downloadToken: string } => {
+  const accessToken = downloadToken ? downloadToken : uuidv4();
+  const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encodeURI(
+    destinationPath
+  ).replace(/\//g, "%2F")}?alt=media&token=${accessToken}`;
+  return { publicUrl, downloadToken: accessToken };
 };
 
 // PLACEHOLDER

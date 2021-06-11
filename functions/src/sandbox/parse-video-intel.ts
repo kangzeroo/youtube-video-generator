@@ -1,4 +1,4 @@
-import * as jsonVideoIntel from "./annotations-sample.json";
+import * as jsonVideoIntel from "./video-labels-wholesome.json";
 import admin from "firebase-admin";
 import { protos } from "@google-cloud/video-intelligence";
 import camelize from "camelize";

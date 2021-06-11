@@ -69,12 +69,12 @@ export const getVideoDuration = async (inFilePath: string): Promise<number> => {
 export const extractPreviewImage = async (
   inFilePath: string,
   outDir: string,
+  duration: number,
   width = 320
 ): Promise<string[]> => {
   console.log("extractPreviewImage()");
   const savedFileNames: string[] = [];
   try {
-    const duration = await getVideoDuration(inFilePath);
     console.log("duration: ", JSON.stringify(duration));
     const timemarks = calculateTimemarks(duration);
     console.log("timemarks: ", JSON.stringify(timemarks));

@@ -57,9 +57,8 @@ gcloud config unset auth/impersonate_service_account
 ```
 
 ## To Do
-1. Finish `functions/src/fn/addToDatabase/addToDatabase.fn.ts`
-1b. Test the quality of labelling on a full video vs short scene
-2. Add firestore.save() when a user uploads a raw source video
 3. Clean up code to be more readable
 4. Move out dev API keys to firebase-style environment variables
 5. Test it in production
+6. Write tests when ironed out
+7. Consider upvote & downvote on scenes so that we dont get a lot of garbage scenes

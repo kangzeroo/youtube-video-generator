@@ -28,7 +28,7 @@ import {
 import {
   RAW_VIDEOS_CLOUD_BUCKET,
   SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET,
-  SCENE_VIDEOS_CLOUD_BUCKET,
+  MIN_SCENE_DURATION,
 } from "@constants/constants";
 
 const log = functions.logger.log;
@@ -75,10 +75,9 @@ const saveSceneShots = functions
 
       log("4. annotations: ", annotations);
       // Extract only scenes with annotated duration of over 2 seconds
-      const minSceneDuration = 1.5;
       const validScenes = await extractValidScenes({
         annotations,
-        minSceneDuration,
+        minSceneDuration: MIN_SCENE_DURATION,
         videoPath,
       });
       log("5. validScene: ", validScenes);
@@ -87,9 +86,14 @@ const saveSceneShots = functions
       // upload each valid scene to the right cloud bucket and save reference in firestore
       await Promise.all(
         validScenes.map(async ({ sceneId, scenePath }) => {
-          const destination = await uploadSceneToBucket(sceneId, scenePath);
+          const publicUrl = await uploadSceneToBucket({
+            userId,
+            videoId,
+            sceneId,
+            scenePath,
+          });
           await saveSceneToFirestore({
-            destination: `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/${destination}`,
+            publicUrl,
             sceneId,
             userId,
             videoId,

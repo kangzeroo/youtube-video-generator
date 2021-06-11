@@ -9,7 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import os from "os";
 import { SCENE_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
+import { generateStorageUrlWithDownloadToken } from "@api/helper.api";
 import type {
+  TUserId,
+  TVideoId,
   TSceneId,
   ISceneReference,
   TExtractValidScenesInput,
@@ -89,37 +92,47 @@ export const extractValidScenes = async ({
   return scenes;
 };
 
-export const uploadSceneToBucket = async (
-  sceneId: TSceneId,
-  scenePath: string
-): Promise<string> => {
-  console.log(sceneId);
-  console.log(scenePath);
-  const destination = `scene/${sceneId}/${sceneId}.mp4`;
+interface IUploadScene {
+  userId: TUserId;
+  videoId: TVideoId;
+  sceneId: TSceneId;
+  scenePath: string;
+}
+export const uploadSceneToBucket = async ({
+  userId,
+  videoId,
+  sceneId,
+  scenePath,
+}: IUploadScene): Promise<string> => {
+  const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
+  const { publicUrl } = generateStorageUrlWithDownloadToken(
+    SCENE_VIDEOS_CLOUD_BUCKET,
+    destination
+  );
   await admin.storage().bucket(SCENE_VIDEOS_CLOUD_BUCKET).upload(scenePath, {
     destination,
   });
-  return destination;
+  return publicUrl;
 };
 
 interface ISceneSave {
   sceneId: string;
   userId: string;
   videoId: string;
-  destination: string;
+  publicUrl: string;
 }
 export const saveSceneToFirestore = async ({
   sceneId,
   userId,
   videoId,
-  destination,
+  publicUrl,
 }: ISceneSave): Promise<void> => {
   await admin.firestore().collection("scenes").doc(sceneId).set(
     {
       sceneId,
-      originalUploaderId: userId,
-      originalVideoId: videoId,
-      destinationStorageUrl: destination,
+      submittedUserId: userId,
+      submittedVideoId: videoId,
+      publicUrl,
     },
     { merge: true }
   );
@@ -162,4 +175,65 @@ const calculateTimeDurationBetween = (
     duration.nanos += 1000000000;
   }
   return duration;
+};
+
+import { videoInfo as IVideoInfo, Media as IMedia } from "ytdl-core";
+import { IVideoMetadata } from "@customTypes/types.spec";
+export const createVideoMetadataFirestore = (
+  videoInfo: IVideoInfo
+): IVideoMetadata => {
+  const { videoDetails } = videoInfo;
+  const today = new Date();
+  const attemptStringToNumber = (assumedNumberString: string): number => {
+    try {
+      return parseInt(assumedNumberString);
+    } catch (e) {
+      return -1;
+    }
+  };
+  const isCreativeCommons = (media?: IMedia) => {
+    let isCC = false;
+    if (
+      media &&
+      media.licensed_by &&
+      media.licensed_by.toLowerCase().indexOf("creative commons") > -1
+    ) {
+      isCC = true;
+    }
+    return isCC;
+  };
+  return {
+    downloadedAt: today,
+    originalInfo: {
+      videoTitle: videoDetails.title,
+      videoId: videoDetails.videoId,
+      videoUrl: videoDetails.video_url,
+      channelTitle: videoDetails.ownerChannelName,
+      channelId: videoDetails.channelId,
+      channelExternalId: videoDetails.externalChannelId,
+      channelUrl: videoDetails.author.channel_url,
+      uploadDate: new Date(videoDetails.uploadDate),
+      publishDate: new Date(videoDetails.publishDate),
+      durationInSeconds: attemptStringToNumber(videoDetails.lengthSeconds),
+      category: videoDetails.category,
+      licensedBy: videoDetails.media.licensed_by || "",
+      isCreativeCommons: isCreativeCommons(videoDetails.media),
+    },
+    snapshotStats: {
+      snapshotDate: today,
+      channelSubscriberCount: videoDetails.author.subscriber_count || -1,
+      viewCount: attemptStringToNumber(videoDetails.viewCount),
+      likes: videoDetails.likes || -1,
+      dislikes: videoDetails.dislikes || -1,
+      isPrivate: videoDetails.isPrivate,
+      isUnlisted: videoDetails.isUnlisted,
+      isFamilySafe: videoDetails.isFamilySafe,
+      isCrawlable: videoDetails.isCrawlable,
+      isLiveContent: videoDetails.isLiveContent,
+      averageRating: videoDetails.averageRating,
+      allowRating: videoDetails.allowRatings,
+      isAgeRestricted: videoDetails.age_restricted,
+      description: videoDetails.description || "",
+    },
+  };
 };
