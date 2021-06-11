@@ -12,32 +12,47 @@
 
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
-import ytdl, { videoFormat as IVideoFormat } from "ytdl-core";
+import ytdl, {
+  videoFormat as IVideoFormat,
+  videoInfo as IVideoInfo,
+} from "ytdl-core";
 import { v4 as uuidv4 } from "uuid";
+import { createVideoMetadataFirestore } from "@api/sceneUploader.api";
 import { RAW_VIDEOS_CLOUD_BUCKET, USER_ID } from "@constants/constants";
 import { generateStorageUrlWithDownloadToken } from "@api/helper.api";
+import { TUserId, TVideoId, IVideoMetadata } from "@customTypes/types.spec";
 
 const log = functions.logger.log;
 
 const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
 
+const saveOriginalVideoMetadataFirestore = async (
+  videoId: TVideoId,
+  userId: TUserId,
+  metadata?: IVideoMetadata | null
+): Promise<void> => {
+  await admin.firestore().collection("videos").doc(videoId).set(
+    {
+      videoId,
+      userId,
+      metadata,
+    },
+    { merge: true }
+  );
+};
+
 const downloadYouTube = functions.https.onRequest(async (req, res) => {
   log("1. downloadYouTube()");
-  log("2. Attempting to upload youtube video to google cloud storage....");
-
-  // ytdl() --> createWriteStream()
-  // https://github.com/fent/node-ytdl-core
-  // https://googleapis.dev/nodejs/storage/latest/File.html#createWriteStream
   const videoId = uuidv4();
-  const destinationPath = `user/${USER_ID}/video/${videoId}/${videoId}.mp4`;
+  const userId = USER_ID;
+  const destinationPath = `user/${userId}/video/${videoId}/${videoId}.mp4`;
   const file = bucket.file(destinationPath);
-
   const { publicUrl, downloadToken } = generateStorageUrlWithDownloadToken(
     bucket.name,
     destinationPath
   );
 
-  log("3. Writing video to cloud bucket");
+  log("2. Prepare attempt to upload youtube video to google cloud storage....");
   const { url, startTime, endTime } = req.body;
   const youtubeDownloadOptions = {
     ...(startTime &&
@@ -46,6 +61,7 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
       }),
     filter: (format: IVideoFormat) => format.container === "mp4",
   };
+  log("3. Prepare to write video to cloud bucket");
   const firebaseBucketWriteStream = file.createWriteStream({
     metadata: {
       metadata: {
@@ -53,7 +69,11 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
       },
     },
   });
+  let videoMetadata: IVideoMetadata | null = null;
   ytdl(url, youtubeDownloadOptions)
+    .on("info", (info: IVideoInfo) => {
+      videoMetadata = createVideoMetadataFirestore(info);
+    })
     .pipe(firebaseBucketWriteStream)
     .on("error", (err: Error) => {
       console.error(err);
@@ -62,11 +82,20 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
         error: err,
       });
     })
-    .on("finish", () => {
+    .on("finish", async () => {
       console.log("Successfully uploaded");
-      res.status(200).send({
-        message: `Successfully uploaded youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
-      });
+      if (videoMetadata) {
+        await saveOriginalVideoMetadataFirestore(
+          videoId,
+          userId,
+          videoMetadata
+        );
+        res.status(200).send({
+          message: `Successfully uploaded youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
+        });
+      } else {
+        throw Error("Could not find any video metadata at all!");
+      }
     });
 });
 

@@ -176,3 +176,64 @@ const calculateTimeDurationBetween = (
   }
   return duration;
 };
+
+import { videoInfo as IVideoInfo, Media as IMedia } from "ytdl-core";
+import { IVideoMetadata } from "@customTypes/types.spec";
+export const createVideoMetadataFirestore = (
+  videoInfo: IVideoInfo
+): IVideoMetadata => {
+  const { videoDetails } = videoInfo;
+  const today = new Date();
+  const attemptStringToNumber = (assumedNumberString: string): number => {
+    try {
+      return parseInt(assumedNumberString);
+    } catch (e) {
+      return -1;
+    }
+  };
+  const isCreativeCommons = (media?: IMedia) => {
+    let isCC = false;
+    if (
+      media &&
+      media.licensed_by &&
+      media.licensed_by.toLowerCase().indexOf("creative commons") > -1
+    ) {
+      isCC = true;
+    }
+    return isCC;
+  };
+  return {
+    downloadedAt: today,
+    originalInfo: {
+      videoTitle: videoDetails.title,
+      videoId: videoDetails.videoId,
+      videoUrl: videoDetails.video_url,
+      channelTitle: videoDetails.ownerChannelName,
+      channelId: videoDetails.channelId,
+      channelExternalId: videoDetails.externalChannelId,
+      channelUrl: videoDetails.author.channel_url,
+      uploadDate: new Date(videoDetails.uploadDate),
+      publishDate: new Date(videoDetails.publishDate),
+      durationInSeconds: attemptStringToNumber(videoDetails.lengthSeconds),
+      category: videoDetails.category,
+      licensedBy: videoDetails.media.licensed_by || "",
+      isCreativeCommons: isCreativeCommons(videoDetails.media),
+    },
+    snapshotStats: {
+      snapshotDate: today,
+      channelSubscriberCount: videoDetails.author.subscriber_count || -1,
+      viewCount: attemptStringToNumber(videoDetails.viewCount),
+      likes: videoDetails.likes || -1,
+      dislikes: videoDetails.dislikes || -1,
+      isPrivate: videoDetails.isPrivate,
+      isUnlisted: videoDetails.isUnlisted,
+      isFamilySafe: videoDetails.isFamilySafe,
+      isCrawlable: videoDetails.isCrawlable,
+      isLiveContent: videoDetails.isLiveContent,
+      averageRating: videoDetails.averageRating,
+      allowRating: videoDetails.allowRatings,
+      isAgeRestricted: videoDetails.age_restricted,
+      description: videoDetails.description || "",
+    },
+  };
+};

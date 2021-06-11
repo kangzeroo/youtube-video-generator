@@ -5,6 +5,7 @@ import ytdl, {
 } from "ytdl-core";
 import { RAW_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
 import { generateStorageUrlWithDownloadToken } from "@api/helper.api";
+import { createVideoMetadataFirestore } from "@api/sceneUploader.api";
 import * as serviceAccount from "./firebase-serviceAccountKey.json";
 
 const params = {
@@ -22,9 +23,10 @@ const params = {
 admin.initializeApp({
   credential: admin.credential.cert(params),
 });
-
+const userId = "local-test-user";
+const videoId = "test-video";
 const bucket = admin.storage().bucket(RAW_VIDEOS_CLOUD_BUCKET);
-const destinationPath = "user/local-test-user/video/test-video/test-video.mp4";
+const destinationPath = `user/${userId}/video/${videoId}/original-video-${videoId}.mp4`;
 
 const run = async (): Promise<void> => {
   const file = bucket.file(destinationPath);
@@ -39,25 +41,37 @@ const run = async (): Promise<void> => {
       },
     },
   });
-  const url = "https://www.youtube.com/watch?v=b7zWNabebxs";
+  const url = "https://www.youtube.com/watch?v=4w4-50ZhZhk";
   const youtubeDownloadOptions = {
     filter: (format: IVideoFormat) => {
       return format.container === "mp4";
     },
   };
+  let videoMetadata = {};
   ytdl(url, youtubeDownloadOptions)
     .on("info", (info: IVideoInfo) => {
       console.log("info: ");
       console.log(info);
+      videoMetadata = createVideoMetadataFirestore(info);
+      console.log("videoMetadata: ");
+      console.log(videoMetadata);
     })
     .pipe(firebaseBucketWriteStream)
     .on("error", (err: Error) => {
       console.error(err);
     })
-    .on("finish", () => {
+    .on("finish", async () => {
       console.log("Successfully uploaded");
       console.log(
         `Successfully uploaded youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`
+      );
+      await admin.firestore().collection("videos").doc(videoId).set(
+        {
+          videoId,
+          userId,
+          metadata: videoMetadata,
+        },
+        { merge: true }
       );
     });
   return new Promise((res, rej) => {

@@ -43,3 +43,39 @@ export interface ISceneReference {
   sceneId: string;
   scenePath: string;
 }
+
+// types for youtube video metadata
+export interface IVideoMetadata {
+  downloadedAt: Date;
+  originalInfo: {
+    videoTitle: string;
+    videoId: string;
+    videoUrl: string;
+    channelTitle: string;
+    channelId: string;
+    channelExternalId: string;
+    channelUrl: string;
+    uploadDate: Date;
+    publishDate: Date;
+    durationInSeconds: number;
+    category: string;
+    licensedBy: string;
+    isCreativeCommons: boolean;
+  };
+  snapshotStats: {
+    snapshotDate: Date;
+    channelSubscriberCount: number;
+    viewCount: number;
+    likes: number;
+    dislikes: number;
+    isPrivate: boolean;
+    isUnlisted: boolean;
+    isFamilySafe: boolean;
+    isCrawlable: boolean;
+    isLiveContent: boolean;
+    averageRating: number;
+    allowRating: boolean;
+    isAgeRestricted: boolean;
+    description: string;
+  };
+}
