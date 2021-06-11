@@ -14,11 +14,11 @@ export const RAW_VIDEOS_CLOUD_BUCKET = "raw-videos-prod";
 export const SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET =
   "shot-change-annotations-88-prod";
 // where we store split videos
-export const SCENE_VIDEOS_CLOUD_BUCKET = "split-videos-88-prod";
+export const SCENE_VIDEOS_CLOUD_BUCKET = "scene-videos-88-prod";
 // where we store video thumbnails
 export const VIDEO_THUMBNAILS_CLOUD_BUCKET = "video-thumbnails-88-prod";
 // where we store video metadata
-export const METADATA_VIDEOS_CLOUD_BUCKET = "metadata-videos-prod";
+export const SCENE_METADATA_CLOUD_BUCKET = "scene-metadata-88-prod";
 
 // list of video-intelligence services
 export const VIDEO_INTELLIGENCE_SERVICES = {

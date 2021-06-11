@@ -8,7 +8,7 @@
  *  `gs://${VIDEO_THUMBNAILS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/thumbnail/thumbnail-${sceneId}.png`
  *
  *  Outbound scene annotations
- *  `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`
+ *  `gs://${SCENE_METADATA_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`
  */
 
 import admin from "firebase-admin";
@@ -18,7 +18,7 @@ import path from "path";
 import os from "os";
 import fs from "fs";
 import {
-  METADATA_VIDEOS_CLOUD_BUCKET,
+  SCENE_METADATA_CLOUD_BUCKET,
   SCENE_VIDEOS_CLOUD_BUCKET,
   VIDEO_INTELLIGENCE_SERVICES,
   VIDEO_THUMBNAILS_CLOUD_BUCKET,
@@ -121,7 +121,7 @@ const analyzeSceneShots = functions
 
       log("4. Annotating LABEL_DETECTION on scene...");
       // Annotate LABEL_DETECTION on scene video
-      const outputUri = `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`;
+      const outputUri = `gs://${SCENE_METADATA_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`;
       const request = {
         inputUri: `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/${filePath}`,
         outputUri,
