@@ -130,8 +130,8 @@ export const saveSceneToFirestore = async ({
   await admin.firestore().collection("scenes").doc(sceneId).set(
     {
       sceneId,
-      originalUploaderId: userId,
-      originalVideoId: videoId,
+      submittedUserId: userId,
+      submittedVideoId: videoId,
       publicUrl,
     },
     { merge: true }

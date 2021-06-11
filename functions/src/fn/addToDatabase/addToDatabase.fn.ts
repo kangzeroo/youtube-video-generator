@@ -11,7 +11,7 @@ import os from "os";
 import fs from "fs";
 import camelize from "camelize";
 import { extractRelevantIds } from "@api/helper.api";
-import { createLabeledScenesForSearch } from "@api/analyze.api";
+import { createLabeledScenesForSearch, compileLabels } from "@api/analyze.api";
 import { METADATA_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
 
 const log = functions.logger.log;
@@ -45,12 +45,16 @@ const addToDatabase = functions.storage
       log("4. Labels: ", annotatedLabels);
       log("4b. Uploading to firestore...");
       // upload the labeled scenes to firestore
-      admin.firestore().collection("scenes").doc(sceneId).set(
-        {
-          labels: annotatedLabels,
-        },
-        { merge: true }
-      );
+      admin
+        .firestore()
+        .collection("scenes")
+        .doc(sceneId)
+        .set(
+          {
+            labels: compileLabels(annotatedLabels),
+          },
+          { merge: true }
+        );
     }
   });
 

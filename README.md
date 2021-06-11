@@ -57,7 +57,6 @@ gcloud config unset auth/impersonate_service_account
 ```
 
 ## To Do
-1. Finish `functions/src/fn/addToDatabase/addToDatabase.fn.ts` refactor firestore scene labels to comply with only 1 `array-contains` query (see [firestore compount queries](https://firebase.google.com/docs/firestore/query-data/queries#compound_queries))
 3. Clean up code to be more readable
 4. Move out dev API keys to firebase-style environment variables
 5. Test it in production

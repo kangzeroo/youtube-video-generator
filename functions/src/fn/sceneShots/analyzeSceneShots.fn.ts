@@ -23,7 +23,7 @@ import {
   VIDEO_INTELLIGENCE_SERVICES,
   VIDEO_THUMBNAILS_CLOUD_BUCKET,
 } from "@constants/constants";
-import { extractPreviewImage } from "@api/thumbnail.api";
+import { extractPreviewImage, getVideoDuration } from "@api/thumbnail.api";
 import {
   extractRelevantIds,
   generateStorageUrlWithDownloadToken,
@@ -60,10 +60,12 @@ const analyzeSceneShots = functions
       fs.statSync(tempVideoPath);
       const fileNames: string[] = [];
       const tempThumbnailsPath = os.tmpdir();
+      const duration = await getVideoDuration(tempVideoPath);
       try {
         const names: string[] = await extractPreviewImage(
           tempVideoPath,
-          tempThumbnailsPath
+          tempThumbnailsPath,
+          duration
         );
         names.forEach((n) => fileNames.push(n));
       } catch (err) {
@@ -100,6 +102,11 @@ const analyzeSceneShots = functions
         // save thumbnail scene references to firestore
         await admin.firestore().collection("scenes").doc(sceneId).set(
           {
+            sceneId,
+            durationInSeconds: duration,
+            submittedUserId: userId,
+            submittedVideoId: videoId,
+            downloadedDate: new Date(),
             thumbnails: savedThumbnails,
           },
           { merge: true }
