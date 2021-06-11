@@ -86,5 +86,5 @@ export const generateStorageUrlWithDownloadToken = (
 //   SHOT_CHANGE_ANNOTATIONS_CLOUD_BUCKET: (): string => "",
 //   SCENE_VIDEOS_CLOUD_BUCKET: (): string => "",
 //   VIDEO_THUMBNAILS_CLOUD_BUCKET: (): string => "",
-//   METADATA_VIDEOS_CLOUD_BUCKET: (): string => "",
+//   SCENE_METADATA_CLOUD_BUCKET: (): string => "",
 // };

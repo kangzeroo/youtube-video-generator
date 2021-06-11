@@ -12,12 +12,12 @@ import fs from "fs";
 import camelize from "camelize";
 import { extractRelevantIds } from "@api/helper.api";
 import { createLabeledScenesForSearch, compileLabels } from "@api/analyze.api";
-import { METADATA_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
+import { SCENE_METADATA_CLOUD_BUCKET } from "@constants/constants";
 
 const log = functions.logger.log;
 
 const addToDatabase = functions.storage
-  .bucket(METADATA_VIDEOS_CLOUD_BUCKET)
+  .bucket(SCENE_METADATA_CLOUD_BUCKET)
   .object()
   .onFinalize(async (object) => {
     log("1. addToDatabase()");
