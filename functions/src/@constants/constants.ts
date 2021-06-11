@@ -52,3 +52,4 @@ export const VALID_VIDEO_FORMATS = {
   MP4: ".mp4" as unknown as TVideoFileExtension,
 };
 export const VALID_VIDEO_LENGTH_SECONDS = 60 * 20;
+export const MIN_SCENE_DURATION = 2;

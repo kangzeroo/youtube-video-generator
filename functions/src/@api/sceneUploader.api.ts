@@ -9,7 +9,10 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import os from "os";
 import { SCENE_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
+import { generateStorageUrlWithDownloadToken } from "@api/helper.api";
 import type {
+  TUserId,
+  TVideoId,
   TSceneId,
   ISceneReference,
   TExtractValidScenesInput,
@@ -89,37 +92,47 @@ export const extractValidScenes = async ({
   return scenes;
 };
 
-export const uploadSceneToBucket = async (
-  sceneId: TSceneId,
-  scenePath: string
-): Promise<string> => {
-  console.log(sceneId);
-  console.log(scenePath);
-  const destination = `scene/${sceneId}/${sceneId}.mp4`;
+interface IUploadScene {
+  userId: TUserId;
+  videoId: TVideoId;
+  sceneId: TSceneId;
+  scenePath: string;
+}
+export const uploadSceneToBucket = async ({
+  userId,
+  videoId,
+  sceneId,
+  scenePath,
+}: IUploadScene): Promise<string> => {
+  const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
+  const { publicUrl } = generateStorageUrlWithDownloadToken(
+    SCENE_VIDEOS_CLOUD_BUCKET,
+    destination
+  );
   await admin.storage().bucket(SCENE_VIDEOS_CLOUD_BUCKET).upload(scenePath, {
     destination,
   });
-  return destination;
+  return publicUrl;
 };
 
 interface ISceneSave {
   sceneId: string;
   userId: string;
   videoId: string;
-  destination: string;
+  publicUrl: string;
 }
 export const saveSceneToFirestore = async ({
   sceneId,
   userId,
   videoId,
-  destination,
+  publicUrl,
 }: ISceneSave): Promise<void> => {
   await admin.firestore().collection("scenes").doc(sceneId).set(
     {
       sceneId,
       originalUploaderId: userId,
       originalVideoId: videoId,
-      destinationStorageUrl: destination,
+      publicUrl,
     },
     { merge: true }
   );

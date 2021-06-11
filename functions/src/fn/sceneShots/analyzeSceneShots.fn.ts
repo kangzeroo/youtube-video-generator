@@ -2,13 +2,13 @@
  *      ANALYZE SCENE SHOTS
  * ---------------------------
  *  Inbound scene video
- *  `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/scene/${sceneId}/${sceneId}.mp4`
+ *  `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`
  *
  *  Outbound thumbnails
- *  `gs://${VIDEO_THUMBNAILS_CLOUD_BUCKET}/scene/${sceneId}/thumbnail/thumbnail-${sceneId}.png`
+ *  `gs://${VIDEO_THUMBNAILS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/thumbnail/thumbnail-${sceneId}.png`
  *
  *  Outbound scene annotations
- *  `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/scene/${sceneId}/${sceneId}.json`
+ *  `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`
  */
 
 import admin from "firebase-admin";
@@ -24,7 +24,10 @@ import {
   VIDEO_THUMBNAILS_CLOUD_BUCKET,
 } from "@constants/constants";
 import { extractPreviewImage } from "@api/thumbnail.api";
-import { extractRelevantIds } from "@api/helper.api";
+import {
+  extractRelevantIds,
+  generateStorageUrlWithDownloadToken,
+} from "@api/helper.api";
 
 const log = functions.logger.log;
 const runtimeOpts = {
@@ -50,7 +53,7 @@ const analyzeSceneShots = functions
         .bucket(object.bucket)
         .file(filePath)
         .download({ destination: tempVideoPath });
-      const { sceneId } = extractRelevantIds(filePath);
+      const { userId, videoId, sceneId } = extractRelevantIds(filePath);
       log(`2b. relevantIds: sceneId=${sceneId}`);
 
       // Generate thumbnails from scene
@@ -74,13 +77,23 @@ const analyzeSceneShots = functions
         const savedThumbnails = await Promise.all(
           fileNames.map(async (name, idx) => {
             const destination = `scene/${sceneId}/thumbnail/thumbnail-${idx}-${sceneId}.png`;
+            const { publicUrl, downloadToken } =
+              generateStorageUrlWithDownloadToken(
+                VIDEO_THUMBNAILS_CLOUD_BUCKET,
+                destination
+              );
             await admin
               .storage()
               .bucket(VIDEO_THUMBNAILS_CLOUD_BUCKET)
               .upload(`${tempThumbnailsPath}/${name}`, {
                 destination,
+                metadata: {
+                  metadata: {
+                    firebaseStorageDownloadTokens: downloadToken,
+                  },
+                },
               });
-            return destination;
+            return publicUrl;
           })
         );
         log("4. Saving thumbnails to firestore...");
@@ -101,7 +114,7 @@ const analyzeSceneShots = functions
 
       log("4. Annotating LABEL_DETECTION on scene...");
       // Annotate LABEL_DETECTION on scene video
-      const outputUri = `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/scene/${sceneId}/${sceneId}.json`;
+      const outputUri = `gs://${METADATA_VIDEOS_CLOUD_BUCKET}/user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.json`;
       const request = {
         inputUri: `gs://${SCENE_VIDEOS_CLOUD_BUCKET}/${filePath}`,
         outputUri,

@@ -1,5 +1,7 @@
 import admin from "firebase-admin";
 import video, { protos } from "@google-cloud/video-intelligence";
+import camelize from "camelize";
+import * as jsonVideoIntel from "./video-labels-wholesome.json";
 import * as serviceAccount from "./firebase-serviceAccountKey.json";
 const params = {
   type: serviceAccount.type,
@@ -63,7 +65,7 @@ const request = {
   // videoContext: videoContext,
 };
 
-const run = async (): Promise<void> => {
+export const run = async (): Promise<void> => {
   console.log("request ", request);
   try {
     const client = new video.v1.VideoIntelligenceServiceClient();
@@ -80,6 +82,53 @@ const run = async (): Promise<void> => {
   });
 };
 
-run();
+const analyze = (
+  jsonVideoIntel: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse
+): Promise<void> => {
+  console.log("all labels:");
+  console.log(jsonVideoIntel);
+  const shotLabelAnnotations = jsonVideoIntel.annotationResults
+    .filter((annotationSet) => {
+      return annotationSet.shotLabelAnnotations;
+    })
+    .reduce((acc, annotationSet) => {
+      const annSet = annotationSet.shotLabelAnnotations
+        ? annotationSet.shotLabelAnnotations
+        : [];
+      return acc.concat(annSet);
+    }, [] as protos.google.cloud.videointelligence.v1.ILabelAnnotation[]);
+  const onlyWithinTime = () => {
+    const startTime = 0;
+    const endTime = 8;
+    const labelsFoundInTimeRange: protos.google.cloud.videointelligence.v1.ILabelAnnotation[] =
+      [];
+    shotLabelAnnotations.forEach((shot) => {
+      let foundInTimerange = false;
+      shot.segments?.forEach((seg) => {
+        const s = seg.segment?.startTimeOffset?.seconds || 0;
+        const e = seg.segment?.endTimeOffset?.seconds || 0;
+        if (s >= startTime && e <= endTime) {
+          foundInTimerange = true;
+        }
+      });
+      if (foundInTimerange) {
+        labelsFoundInTimeRange.push(shot);
+      }
+    });
+    console.log(`labelsFoundInTimeRange ${startTime} to ${endTime} seconds:`);
+    console.log(labelsFoundInTimeRange);
+  };
+  onlyWithinTime();
+  /* eslint-disable  @typescript-eslint/no-unused-vars */
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res();
+    }, 9999999);
+  });
+};
+
+// run();
+const camelJson = camelize(jsonVideoIntel);
+analyze(camelJson);
 
 // $ npm run sandbox ./src/sandbox/compare-labels.ts
