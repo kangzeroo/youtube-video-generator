@@ -3,17 +3,19 @@
  * ---------------------------
  */
 import { protos } from "@google-cloud/video-intelligence";
-import type { ILabeledScene } from "@customTypes/types.spec";
 
-// PLACEHOLDER
 export const createLabeledScenesForSearch = async (
-  annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse,
-  sceneId: string
-): Promise<ILabeledScene[]> => {
-  console.log(annotations);
-  console.log(sceneId);
-  if (sceneId) {
-    return [{ sceneId }];
-  }
-  return [];
+  annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse
+): Promise<protos.google.cloud.videointelligence.v1.ILabelAnnotation[]> => {
+  const allLabels = annotations.annotationResults
+    .filter((annotationSet) => {
+      return annotationSet.shotLabelAnnotations;
+    })
+    .reduce((acc, annotationSet) => {
+      const annSet = annotationSet.shotLabelAnnotations
+        ? annotationSet.shotLabelAnnotations
+        : [];
+      return acc.concat(annSet);
+    }, [] as protos.google.cloud.videointelligence.v1.ILabelAnnotation[]);
+  return allLabels;
 };
