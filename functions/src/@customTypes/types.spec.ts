@@ -26,6 +26,7 @@ export interface ILabeledScene {
 export interface TExtractValidScenesInput {
   annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse;
   minSceneDuration: number;
+  maxSceneDuration: number;
   videoPath: string;
 }
 export interface ISplitSceneAnnotation {

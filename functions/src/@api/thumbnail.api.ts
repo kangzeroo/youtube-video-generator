@@ -94,7 +94,6 @@ export const extractPreviewImage = async (
     return new Promise((resolve, reject) => {
       cmd.on("end", () => {
         console.log("Resolving thumbnail generation!");
-        savedFileNames.forEach((f) => console.log(`iiii. ${f}`));
         resolve(savedFileNames);
       });
       cmd.on("error", reject);

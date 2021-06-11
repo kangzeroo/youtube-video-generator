@@ -9,11 +9,7 @@ import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import os from "os";
 import { SCENE_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
-import { generateStorageUrlWithDownloadToken } from "@api/helper.api";
 import type {
-  TUserId,
-  TVideoId,
-  TSceneId,
   ISceneReference,
   TExtractValidScenesInput,
 } from "@customTypes/types.spec";
@@ -24,6 +20,7 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 export const extractValidScenes = async ({
   annotations,
   minSceneDuration,
+  maxSceneDuration,
   videoPath,
 }: TExtractValidScenesInput): Promise<ISceneReference[]> => {
   const allValidTimeRanges = annotations.annotationResults
@@ -60,59 +57,60 @@ export const extractValidScenes = async ({
       };
     })
     .filter((annotation) => {
-      return annotation.reference.durationInSecondsNanos > minSceneDuration;
+      return (
+        annotation.reference.durationInSecondsNanos >= minSceneDuration &&
+        annotation.reference.durationInSecondsNanos < maxSceneDuration
+      );
     });
   // REPLACE IN PRODUCTION (remove subset)
   // const subset = allValidTimeRanges.slice(0, 10);
+  const totalTimerangeCount = allValidTimeRanges.length;
+  console.log(`Found ${totalTimerangeCount} total timeranges...`);
   const scenes = await Promise.all(
-    allValidTimeRanges.map(async (timerange): Promise<ISceneReference> => {
-      const sceneId = `scene-${uuidv4()}`;
-      const scenePath = path.join(os.tmpdir(), `${sceneId}.mp4`);
-      return new Promise((resolve, reject) => {
-        ffmpeg(videoPath)
-          .setStartTime(timerange.reference.startInSecondsNanos)
-          .setDuration(timerange.reference.durationInSecondsNanos)
-          .output(scenePath)
-          .on("end", (err) => {
-            if (!err) {
-              console.log(`Cut & saved scene ${sceneId}.mp4`);
-              resolve({
-                sceneId,
-                scenePath,
-              });
-            }
-          })
-          .on("error", (err) => {
-            reject(err);
-          })
-          .run();
-      });
-    })
+    allValidTimeRanges.map(
+      async (timerange, index): Promise<ISceneReference> => {
+        console.log(
+          `Splicing timerange #${index + 1} of ${totalTimerangeCount}`
+        );
+        const sceneId = `scene-${uuidv4()}`;
+        const scenePath = path.join(os.tmpdir(), `${sceneId}.mp4`);
+        return new Promise((resolve, reject) => {
+          ffmpeg(videoPath)
+            .setStartTime(timerange.reference.startInSecondsNanos)
+            .setDuration(timerange.reference.durationInSecondsNanos)
+            .output(scenePath)
+            .on("end", (err) => {
+              if (!err) {
+                console.log(`Cut & saved scene ${sceneId}.mp4`);
+                resolve({
+                  sceneId,
+                  scenePath,
+                });
+              }
+            })
+            .on("error", (err) => {
+              reject(err);
+            })
+            .run();
+        });
+      }
+    )
   );
   return scenes;
 };
 
 interface IUploadScene {
-  userId: TUserId;
-  videoId: TVideoId;
-  sceneId: TSceneId;
   scenePath: string;
+  destination: string;
 }
 export const uploadSceneToBucket = async ({
-  userId,
-  videoId,
-  sceneId,
   scenePath,
+  destination,
 }: IUploadScene): Promise<string> => {
-  const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
-  const { publicUrl } = generateStorageUrlWithDownloadToken(
-    SCENE_VIDEOS_CLOUD_BUCKET,
-    destination
-  );
   await admin.storage().bucket(SCENE_VIDEOS_CLOUD_BUCKET).upload(scenePath, {
     destination,
   });
-  return publicUrl;
+  return destination;
 };
 
 interface ISceneSave {
