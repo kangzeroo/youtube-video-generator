@@ -12,7 +12,8 @@
     "baseUrl": "src",
     "paths": {
       "@constants/*": ["@constants/*"],
-      "@api/*": ["@api/*"]
+      "@api/*": ["@api/*"],
+      "@graphql/*": ["@graphql/*"]
     },
     "typeRoots" : ["./node_modules/@types", "src/@customTypes"]
   },
