@@ -12,7 +12,6 @@ export type Scalars = {
   Int: number;
   Float: number;
   Tag: any;
-  /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
 
@@ -25,12 +24,12 @@ export enum CacheControlScope {
 export type Query = {
   __typename?: 'Query';
   /** A simple type for getting started! */
-  getScenesByTag?: Maybe<Scene>;
+  getScenesByTag?: Maybe<Array<Maybe<Scene>>>;
 };
 
 
 export type QueryGetScenesByTagArgs = {
-  tag?: Maybe<Scalars['Tag']>;
+  tags?: Maybe<Array<Maybe<Scalars['Tag']>>>;
 };
 
 export type Scene = {
@@ -44,7 +43,8 @@ export type Scene = {
 
 
 
-
+export type WithIndex<TObject> = TObject & Record<string, any>;
+export type ResolversObject<TObject> = WithIndex<TObject>;
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
 
@@ -121,7 +121,7 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 ) => TResult | Promise<TResult>;
 
 /** Mapping between all available schema types and the resolvers types */
-export type ResolversTypes = {
+export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   Query: ResolverTypeWrapper<{}>;
   Scene: ResolverTypeWrapper<Scene>;
@@ -131,10 +131,10 @@ export type ResolversTypes = {
   Upload: ResolverTypeWrapper<Scalars['Upload']>;
   Int: ResolverTypeWrapper<Scalars['Int']>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']>;
-};
+}>;
 
 /** Mapping between all available schema types and the resolvers parents */
-export type ResolversParentTypes = {
+export type ResolversParentTypes = ResolversObject<{
   Query: {};
   Scene: Scene;
   String: Scalars['String'];
@@ -143,25 +143,25 @@ export type ResolversParentTypes = {
   Upload: Scalars['Upload'];
   Int: Scalars['Int'];
   Boolean: Scalars['Boolean'];
-};
+}>;
 
 export type CacheControlDirectiveArgs = {   maxAge?: Maybe<Scalars['Int']>;
   scope?: Maybe<CacheControlScope>; };
 
 export type CacheControlDirectiveResolver<Result, Parent, ContextType = any, Args = CacheControlDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  getScenesByTag?: Resolver<Maybe<ResolversTypes['Scene']>, ParentType, ContextType, RequireFields<QueryGetScenesByTagArgs, never>>;
-};
+export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+  getScenesByTag?: Resolver<Maybe<Array<Maybe<ResolversTypes['Scene']>>>, ParentType, ContextType, RequireFields<QueryGetScenesByTagArgs, never>>;
+}>;
 
-export type SceneResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scene'] = ResolversParentTypes['Scene']> = {
+export type SceneResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scene'] = ResolversParentTypes['Scene']> = ResolversObject<{
   sceneId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   publicUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   durationInSeconds?: Resolver<Maybe<ResolversTypes['Float']>, ParentType, ContextType>;
   labels?: Resolver<Array<Maybe<ResolversTypes['Tag']>>, ParentType, ContextType>;
   thumbnails?: Resolver<Maybe<Array<Maybe<ResolversTypes['String']>>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
-};
+}>;
 
 export interface TagScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Tag'], any> {
   name: 'Tag';
@@ -171,12 +171,12 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
   name: 'Upload';
 }
 
-export type Resolvers<ContextType = any> = {
+export type Resolvers<ContextType = any> = ResolversObject<{
   Query?: QueryResolvers<ContextType>;
   Scene?: SceneResolvers<ContextType>;
   Tag?: GraphQLScalarType;
   Upload?: GraphQLScalarType;
-};
+}>;
 
 
 /**
@@ -184,9 +184,9 @@ export type Resolvers<ContextType = any> = {
  * Use "Resolvers" root object instead. If you wish to get "IResolvers", add "typesPrefix: I" to your config.
  */
 export type IResolvers<ContextType = any> = Resolvers<ContextType>;
-export type DirectiveResolvers<ContextType = any> = {
+export type DirectiveResolvers<ContextType = any> = ResolversObject<{
   cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
-};
+}>;
 
 
 /**

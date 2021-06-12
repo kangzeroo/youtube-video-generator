@@ -1,18 +1,9 @@
-// import { getScenesByTag } from "@api/query.api";
-import { Resolvers, Scene } from "@customTypes/sharedTypes.spec";
+import { getScenesByTag } from "@api/query.api";
+import { Resolvers } from "@customTypes/graphql-types";
 
 const resolverFunctions: Resolvers = {
   Query: {
-    getScenesByTag: async (_, __, { firestore }): Promise<Scene> => {
-      await firestore.collection();
-      return {
-        sceneId: "String!",
-        publicUrl: "String!",
-        durationInSeconds: 1.44,
-        labels: ["Tag"],
-        thumbnails: ["String"],
-      };
-    },
+    getScenesByTag,
   },
 };
 

@@ -88,3 +88,6 @@ export interface IGraphQLContext {
   firestore: FirebaseFirestore.Firestore;
   headers: Headers;
 }
+// https://www.apollographql.com/docs/apollo-server/api/apollo-server/#rootvalue
+const emptyApolloContructorRootValue = {};
+export type TApolloConstructorRootValue = typeof emptyApolloContructorRootValue;
