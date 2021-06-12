@@ -88,7 +88,12 @@ const SceneResults = ({ searchString }: IProps) => {
                   <TagsFilled />
                   <span css={styles.actionText}>Tags</span>
                 </div>,
-                <div css={styles.action}>
+                <div
+                  onClick={() => {
+                    window?.open(item.publicUrl, "_blank")?.focus();
+                  }}
+                  css={styles.action}
+                >
                   <FolderOpenFilled key="save" />
                   <span css={styles.actionText}>Save</span>
                 </div>,
