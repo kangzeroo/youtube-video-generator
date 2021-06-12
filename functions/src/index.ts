@@ -17,3 +17,6 @@ export { default as saveSceneShots } from "./fn/sceneShots/saveSceneShots.fn";
 export { default as analyzeSceneShots } from "./fn/sceneShots/analyzeSceneShots.fn";
 // Step 4. Upon analyzing each scene, we save the data to firestore db
 export { default as addToDatabase } from "./fn/addToDatabase/addToDatabase.fn";
+
+// GraphQL endpoint
+export { default as graphql } from "./fn/graphql/graphql.fn";
