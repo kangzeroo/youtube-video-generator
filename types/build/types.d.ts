@@ -9,6 +9,7 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  Tag: any;
   /** The `Upload` scalar type represents a file upload. */
   Upload: any;
 };
@@ -22,6 +23,21 @@ export enum CacheControlScope {
 export type Query = {
   __typename?: 'Query';
   /** A simple type for getting started! */
-  hello?: Maybe<Scalars['String']>;
+  getScenesByTag?: Maybe<Scene>;
 };
+
+
+export type QueryGetScenesByTagArgs = {
+  tag?: Maybe<Scalars['Tag']>;
+};
+
+export type Scene = {
+  __typename?: 'Scene';
+  sceneId: Scalars['String'];
+  publicUrl: Scalars['String'];
+  durationInSeconds?: Maybe<Scalars['Float']>;
+  labels: Array<Maybe<Scalars['Tag']>>;
+  thumbnails?: Maybe<Array<Maybe<Scalars['String']>>>;
+};
+
 

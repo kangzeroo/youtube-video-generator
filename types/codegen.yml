@@ -3,3 +3,7 @@ generates:
   ./build/types.d.ts:
     plugins:
       - typescript
+  ./build/resolvers-types.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
