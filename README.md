@@ -2,6 +2,8 @@
 
 ![demo](./assets/readme-image.jpg)
 
+[Click here to see it live in Private Alpha v0.1](https://video-entropy.web.app/)
+
 This app turns text into a YouTube video. Multiple scenes are generated based on text keywords or phrases you select, such as "dog chasing ball". If you don't like a scene, the app will offer alternatives until you are satisfied. 
 
 Use this app to quickly generate video content in bulk. This is a better alternative to www.Lumen5.com which does not allow you to pick which word/phrases to generate scenes from, nor allow you to upload your own source videos.
@@ -65,6 +67,8 @@ gcloud config unset auth/impersonate_service_account
 
 
 ## Live Demo (Work in Progress)
+
+[Click here to see it live](https://video-entropy.web.app/)
 
 ![Live Demo](https://firebasestorage.googleapis.com/v0/b/video-entropy.appspot.com/o/public-assets%2Fdemos%2Fdemo-video-generator.gif?alt=media&token=2272ffae-7511-4761-8f05-2a7c09d243a0)
 
