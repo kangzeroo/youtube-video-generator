@@ -20,6 +20,7 @@ module.exports = {
   ignorePatterns: [
     "/lib/**/*", // Ignore built files.
     "/src/@customTypes/graphql-types.d.ts",
+    "/src/sandbox/**/*",
   ],
   plugins: [
     "@typescript-eslint",

@@ -36,7 +36,7 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({ options }) => {
     };
   }, [options]);
 
-  return <video ref={videoNode} className="video-js" />;
+  return <video muted autoPlay ref={videoNode} className="video-js" />;
 };
 
 export default VideoPlayer;
