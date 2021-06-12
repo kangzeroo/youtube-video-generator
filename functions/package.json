@@ -8,6 +8,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy",
     "logs": "firebase functions:log",
+    "local-graphql": "node --inspect -r ts-node/register ./src/@graphql/local.ts",
     "export-creds": "export GOOGLE_APPLICATION_CREDENTIALS=/Users/kangzeroo/Projects/YouTube-Entropy/functions/src/sandbox/firebase-serviceAccountKey.json",
     "sandbox": "npm run export-creds && node --inspect -r ts-node/register"
   },
@@ -19,7 +20,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@ffprobe-installer/ffprobe": "^1.1.0",
     "@google-cloud/video-intelligence": "^3.3.2",
-    "algoliasearch": "^4.9.1",
+    "apollo-server": "^2.25.1",
     "apollo-server-cloud-functions": "^2.25.1",
     "camelize": "^1.0.0",
     "ffmpeg-extract-frames": "^2.0.2",

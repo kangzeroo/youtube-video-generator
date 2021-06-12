@@ -42,6 +42,13 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 
 Always be verifying things work in development before ever porting it over to firebase functions.
 
+GraphQL types are generated from the backend local GQL server (which is integrated with its twin Firebase Cloud Functions version). The frontend and backend can both share the same generated types. To generate types:
+
+```
+$ cd functions && npm run local-graphql
+$ cd types && npm run codegen
+```
+
 ## Advanced Auth
 Upon initial setup, you may need to impersonate an authorized service account IAM in order to access certain Google Cloud APIs. To do so, run the below command:
 
