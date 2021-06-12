@@ -66,7 +66,7 @@ gcloud config unset auth/impersonate_service_account
 
 ## Live Demo (Work in Progress)
 
-![Live Demo](https://firebasestorage.googleapis.com/v0/b/video-entropy.appspot.com/o/public-assets%2Fdemos%2Fdemo-generator.gif?alt=media&token=647c5499-f016-4f0c-914d-1e404d5c3f63)
+![Live Demo](https://firebasestorage.googleapis.com/v0/b/video-entropy.appspot.com/o/public-assets%2Fdemos%2Fdemo-video-generator.gif?alt=media&token=2272ffae-7511-4761-8f05-2a7c09d243a0)
 
 
 ## Cost Calculations
