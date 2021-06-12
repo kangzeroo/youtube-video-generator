@@ -63,6 +63,12 @@ If you want to clear that IAM impersonation:
 gcloud config unset auth/impersonate_service_account
 ```
 
+
+## Live Demo (Work in Progress)
+
+![Live Demo](https://firebasestorage.googleapis.com/v0/b/video-entropy.appspot.com/o/public-assets%2Fdemos%2Fdemo-generator.gif?alt=media&token=647c5499-f016-4f0c-914d-1e404d5c3f63)
+
+
 ## Cost Calculations
 
 ![costs](./assets/cost-calculations.jpg)
