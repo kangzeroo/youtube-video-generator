@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import logo from "logo.svg";
 import "./App.css";
 import { heartbeat } from "@api/helper";
+import Demo from "@components/demo";
 
 function App() {
   useEffect(() => {
@@ -22,6 +23,7 @@ function App() {
         >
           Learn React
         </a>
+        <Demo />
       </header>
     </div>
   );

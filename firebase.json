@@ -7,7 +7,7 @@
     "source": "functions"
   },
   "hosting": {
-    "public": "frontend-youtube-entropy/build",
+    "public": "frontend/build",
     "ignore": [
       "firebase.json",
       "**/.*",
