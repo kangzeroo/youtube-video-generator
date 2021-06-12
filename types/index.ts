@@ -1,9 +1,7 @@
 import { ApolloServer } from "apollo-server";
 
-import schema from "@graphql/schema";
-import resolvers from "@graphql/resolvers";
-
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import schema from "../functions/src/@graphql/schema";
+import resolvers from "../functions/src/@graphql/resolvers";
 
 const server = new ApolloServer({
   typeDefs: schema,

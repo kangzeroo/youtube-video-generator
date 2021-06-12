@@ -42,10 +42,10 @@ The `npm run sandbox` will run `ts-node` on your sandbox typescript file, handle
 
 Always be verifying things work in development before ever porting it over to firebase functions.
 
-GraphQL types are generated from the backend local GQL server (which is integrated with its twin Firebase Cloud Functions version). The frontend and backend can both share the same generated types. To generate types:
+GraphQL types are generated from the backend local GQL server (which is integrated with its twin Firebase Cloud Functions version). The frontend and backend can both share the same generated types. To generate types, open up two terminals and run:
 
 ```
-$ cd functions && npm run local-graphql
+$ cd types && npm run local-graphql
 $ cd types && npm run codegen
 ```
 
