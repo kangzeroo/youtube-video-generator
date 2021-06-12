@@ -1,4 +1,7 @@
+/** @jsxRuntime classic */
+/** @jsx jsx */
 import { gql, useQuery } from "@apollo/client";
+import { jsx } from "@emotion/react";
 
 const EXCHANGE_RATES = gql`
   query GetExchangeRates {
@@ -17,11 +20,20 @@ const Demo = () => {
 
   return data.rates.map(({ currency, rate }: { currency: any; rate: any }) => (
     <div key={currency}>
-      <p>
+      <p css={styles.currency}>
         {currency}: {rate}
       </p>
     </div>
   ));
+};
+
+const styles = {
+  currency: {
+    backgroundColor: "white",
+    color: "black",
+    borderRadius: "5px",
+    padding: "5px",
+  },
 };
 
 export default Demo;
