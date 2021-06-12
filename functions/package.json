@@ -8,7 +8,6 @@
     "start": "npm run shell",
     "deploy": "firebase deploy",
     "logs": "firebase functions:log",
-    "local-graphql": "node --inspect -r ts-node/register ./src/@graphql/local.ts",
     "export-creds": "export GOOGLE_APPLICATION_CREDENTIALS=/Users/kangzeroo/Projects/YouTube-Entropy/functions/src/sandbox/firebase-serviceAccountKey.json",
     "sandbox": "npm run export-creds && node --inspect -r ts-node/register"
   },
