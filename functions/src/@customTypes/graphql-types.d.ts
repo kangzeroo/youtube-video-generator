@@ -23,7 +23,6 @@ export enum CacheControlScope {
 
 export type Query = {
   __typename?: 'Query';
-  /** A simple type for getting started! */
   getScenesByTag?: Maybe<Array<Maybe<Scene>>>;
 };
 

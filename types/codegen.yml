@@ -6,6 +6,12 @@ generates:
       - typescript-resolvers
     config:
       useIndexSignature: true
+  ../frontend/src/@customTypes/graphql-types.d.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
   ./build/graphql-types.d.ts:
     plugins:
       - typescript

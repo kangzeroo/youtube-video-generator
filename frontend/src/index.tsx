@@ -4,10 +4,11 @@ import "./index.css";
 import "antd/dist/antd.css";
 import BrowserPage from "@pages/Browser";
 import reportWebVitals from "./reportWebVitals";
+import { GRAPHQL_ENDPOINT } from "@constants/constants";
 import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const client = new ApolloClient({
-  uri: "https://48p1r2roz4.sse.codesandbox.io",
+  uri: GRAPHQL_ENDPOINT,
   cache: new InMemoryCache(),
 });
 
