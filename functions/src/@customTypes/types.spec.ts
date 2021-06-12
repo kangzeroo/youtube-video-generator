@@ -80,3 +80,11 @@ export interface IVideoMetadata {
     description: string;
   };
 }
+
+// GraphQL
+export interface IGraphQLContext {
+  req: Request;
+  res: Response;
+  firestore: FirebaseFirestore.Firestore;
+  headers: Headers;
+}

@@ -2,6 +2,7 @@ import { ApolloServer } from "apollo-server-cloud-functions";
 import schema from "@graphql/schema";
 import resolvers from "@graphql/resolvers";
 import { firestore } from "@api/query.api";
+import { IGraphQLContext } from "@customTypes/types.spec";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const graphqpl = () => {
@@ -10,7 +11,13 @@ const graphqpl = () => {
     resolvers,
     introspection: true,
     playground: true,
-    context: ({ req, res }) => ({
+    context: ({
+      req,
+      res,
+    }: {
+      req: Request;
+      res: Response;
+    }): IGraphQLContext => ({
       headers: req.headers,
       req,
       res,

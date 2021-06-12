@@ -4,6 +4,7 @@ import type {
   QueryGetScenesByTagArgs,
   Scene,
 } from "@customTypes/sharedTypes.spec";
+import type { IGraphQLContext } from "@customTypes/types.spec";
 
 export const firestore = (() => {
   return admin.firestore();
@@ -12,10 +13,11 @@ export const firestore = (() => {
 export const getScenesByTag = async (
   _: ResolversParentTypes,
   { tag }: QueryGetScenesByTagArgs,
-  { firestore }
+  { firestore }: IGraphQLContext
 ): Promise<Scene> => {
   console.log(tag);
-  await firestore.collection();
+  console.log(firestore);
+  // await firestore.collection();
   return {
     sceneId: "String!",
     publicUrl: "String!",
