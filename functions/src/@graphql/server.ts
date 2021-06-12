@@ -1,19 +1,28 @@
 import { ApolloServer } from "apollo-server-cloud-functions";
-
 import schema from "@graphql/schema";
 import resolvers from "@graphql/resolvers";
+import { firestore } from "@api/query.api";
+import { IGraphQLContext } from "@customTypes/types.spec";
+import type { Resolvers } from "@customTypes/graphql-types";
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 const graphqpl = () => {
   const server = new ApolloServer({
     typeDefs: schema,
-    resolvers,
+    resolvers: resolvers as Resolvers,
     introspection: true,
     playground: true,
-    context: ({ req, res }) => ({
+    context: ({
+      req,
+      res,
+    }: {
+      req: Request;
+      res: Response;
+    }): IGraphQLContext => ({
       headers: req.headers,
       req,
       res,
+      firestore,
     }),
   });
   return server.createHandler({

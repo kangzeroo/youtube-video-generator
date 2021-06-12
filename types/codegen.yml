@@ -1,5 +1,14 @@
 schema: http://localhost:4000
 generates:
-  ./build/types.d.ts:
+  ../functions/src/@customTypes/graphql-types.d.ts:
     plugins:
       - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true
+  ./build/graphql-types.d.ts:
+    plugins:
+      - typescript
+      - typescript-resolvers
+    config:
+      useIndexSignature: true

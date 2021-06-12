@@ -13,7 +13,8 @@
     "paths": {
       "@constants/*": ["@constants/*"],
       "@api/*": ["@api/*"],
-      "@graphql/*": ["@graphql/*"]
+      "@graphql/*": ["@graphql/*"],
+      "@customTypes/*": ["@customTypes/*"]
     },
     "typeRoots" : ["./node_modules/@types", "src/@customTypes"]
   },

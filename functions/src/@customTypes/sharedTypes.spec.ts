@@ -1,1 +1,1 @@
-export type { TDemoSharedType } from "../../../types/index.spec";
+// export type { TDemoSharedType } from "../../../types/index.spec";
