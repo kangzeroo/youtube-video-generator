@@ -1,4 +1,4 @@
-import type { TDemoSharedType } from "@customTypes/sharedTypes";
+import type { TDemoSharedType } from "@customTypes/sharedTypes.spec";
 
 export const heartbeat = (pulse = 3000): TDemoSharedType => {
   let count = 1;
