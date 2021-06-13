@@ -20,6 +20,7 @@ const transformFirestoreSceneToGQL = (scene: any) => {
     durationInSeconds: scene.durationInSeconds,
     labels: scene.labels,
     thumbnails: scene.thumbnails,
+    downloadedDate: scene.downloadedDate,
   };
 };
 
@@ -35,10 +36,31 @@ export const getScenesByTag = async (
   const scenes = await firestore
     .collection("scenes")
     .where("labels", "array-contains-any", maxTenTags)
+    .orderBy("downloadedDate", "desc")
     .limit(50)
     .get()
     .then((querySnapshot) => {
       const results: Scene[] = [];
+      querySnapshot.forEach((doc) => {
+        results.push(transformFirestoreSceneToGQL(doc.data()));
+      });
+      return results;
+    })
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  return scenes;
+};
+
+export const getMostRecentScenes = async (): Promise<Scene[]> => {
+  const scenes = await firestore
+    .collection("scenes")
+    .orderBy("downloadedDate", "desc")
+    .limit(30)
+    .get()
+    .then((querySnapshot) => {
+      const results: any[] = [];
       querySnapshot.forEach((doc) => {
         results.push(transformFirestoreSceneToGQL(doc.data()));
       });

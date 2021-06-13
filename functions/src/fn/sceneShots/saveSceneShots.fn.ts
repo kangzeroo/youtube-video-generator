@@ -39,7 +39,7 @@ import {
 const log = functions.logger.log;
 const runtimeOpts = {
   timeoutSeconds: 540,
-  memory: "4GB" as "4GB",
+  memory: "8GB" as "8GB",
 };
 
 const saveSceneShots = functions

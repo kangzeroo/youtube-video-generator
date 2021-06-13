@@ -4,15 +4,18 @@ import { jsx } from "@emotion/react";
 import { useState } from "react";
 import { COLORS } from "@constants/styles.spec";
 import logo from "@assets/youtube-generator-logo.png";
-import { Input, Space, Image } from "antd";
+import { Input, Space, Image, Button } from "antd";
 import SceneResults from "@components/scene-results";
+import MostRecentSceneResults from "@components/scene-results/MostRecentSceneResults";
 const { Search } = Input;
 
 const BrowserPage = () => {
   const [searchString, updateSearchString] = useState("");
+  const [showMostRecent, updateShowMostRecent] = useState(true);
 
   const onSearch = (value: string) => {
     updateSearchString(value);
+    updateShowMostRecent(false);
   };
 
   return (
@@ -31,8 +34,14 @@ const BrowserPage = () => {
             onSearch={onSearch}
             style={styles.searchBar}
           />
+          <Button onClick={() => updateShowMostRecent(true)}>
+            Show Most Recent
+          </Button>
         </div>
-        {searchString && <SceneResults searchString={searchString} />}
+        {searchString && !showMostRecent && (
+          <SceneResults searchString={searchString} />
+        )}
+        {showMostRecent && <MostRecentSceneResults />}
       </Space>
     </div>
   );

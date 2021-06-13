@@ -27,14 +27,17 @@ const transformFirestoreSceneToGQL = (scene: any) => {
     durationInSeconds: scene.durationInSeconds,
     labels: scene.labels,
     thumbnails: scene.thumbnails,
+    downloadedDate: scene.downloadedDate,
   };
 };
 
-const run = async (): Promise<void> => {
+/* eslint-disable  @typescript-eslint/no-unused-vars */
+const getScenesByTags = async (): Promise<void> => {
   const maxTenTags = ["roti", "pizza"];
   const results = await firestore
     .collection("scenes")
     .where("labels", "array-contains-any", maxTenTags)
+    .orderBy("downloadedDate", "desc")
     .limit(30)
     .get()
     .then((querySnapshot) => {
@@ -56,6 +59,34 @@ const run = async (): Promise<void> => {
     }, 9999999);
   });
 };
-run();
+getScenesByTags();
 
 // $ npm run sandbox ./src/sandbox/query-firestore.ts
+
+const getMostRecentScenes = async () => {
+  const results = await firestore
+    .collection("scenes")
+    .orderBy("downloadedDate", "desc")
+    .limit(30)
+    .get()
+    .then((querySnapshot) => {
+      const results: any[] = [];
+      querySnapshot.forEach((doc) => {
+        results.push(transformFirestoreSceneToGQL(doc.data()));
+      });
+      return results;
+    })
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  console.log("results...");
+  console.log(results);
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res();
+    }, 9999999);
+  });
+};
+
+getMostRecentScenes;

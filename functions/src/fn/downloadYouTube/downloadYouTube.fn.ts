@@ -60,6 +60,7 @@ const downloadYouTube = functions.https.onRequest(async (req, res) => {
         range: { start: startTime, end: endTime },
       }),
     filter: (format: IVideoFormat) => format.container === "mp4",
+    quality: "highestvideo",
   };
   log("3. Prepare to write video to cloud bucket");
   const firebaseBucketWriteStream = file.createWriteStream({
