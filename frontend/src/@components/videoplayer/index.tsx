@@ -93,14 +93,14 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
         as="video"
         href={videoSrc}
       />
-      {/* we do not set <video preload="auto"> because we don't want to spam max HTTP connections to same domain (HTTP 1.1-6 spec)
+      {/* we do not set <video preload="none"> because we don't want to spam max HTTP connections to same domain (HTTP 1.1-6 spec)
           this improves load speed significantly
       */}
       <div id={videoPlayerWrapperId} ref={wrapperRef}>
         <video
           id={videoPlayerId}
           muted
-          preload="metadata"
+          preload="none"
           autoPlay={false}
           ref={videoNode}
           className="video-js"
