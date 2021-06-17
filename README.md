@@ -119,6 +119,7 @@ gcloud config unset auth/impersonate_service_account
     - Consider refactoring the order of video annotation to save costs (since shot detection is free with labeling)
     - Consider downloading the HD 1080p and 360p versions so that one can load fast on browser and the other can be the actual download
     - Write declarative firebase infrastructure config files with alias environment variables (cloud setup currently dependents on manually clicking buttons in Firebase console in browser)
+    - more sematic html, for example <segment> and <article>
     - more consistency on where we store types (some are in the types folder, some are colocated)
 
 ## To Do
