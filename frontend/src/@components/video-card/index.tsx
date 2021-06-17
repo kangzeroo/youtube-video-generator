@@ -42,7 +42,13 @@ const VideoCard = ({ item }: IProps) => {
     <Card
       key={item.sceneId}
       hoverable
-      cover={<VideoPlayer options={videoPlayerOptions(item)} />}
+      cover={
+        <VideoPlayer
+          options={videoPlayerOptions(item)}
+          thumbnail={item.thumbnails && item.thumbnails[0]}
+          videoSrc={item.publicUrl}
+        />
+      }
       actions={[
         <div css={styles.action}>
           <LikeFilled key="like" />
