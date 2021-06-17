@@ -91,7 +91,6 @@ gcloud config unset auth/impersonate_service_account
 
 
 ## To Do
-1. Add quick frontend to query by tag and display videos
 1. Clean up code to be more readable
 2. Move out dev API keys to firebase-style environment variables
 3. Write tests when ironed out
@@ -101,3 +100,4 @@ gcloud config unset auth/impersonate_service_account
 - Consider refactoring the order of video annotation to save costs (since shot detection is free with labeling)
 - Consider allowing editing tags so that team can improve video selection
 - Consider allowing team to delete videos
+- Consider downloading the HD 1080p and 360p versions so that one can load fast on browser and the other can be the actual download

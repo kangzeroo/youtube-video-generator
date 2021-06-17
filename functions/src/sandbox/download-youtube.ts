@@ -41,11 +41,13 @@ const run = async (): Promise<void> => {
       },
     },
   });
-  const url = "https://www.youtube.com/watch?v=4w4-50ZhZhk";
+  const url = "https://www.youtube.com/watch?v=yR4UjMmIvP8";
+
   const youtubeDownloadOptions = {
     filter: (format: IVideoFormat) => {
       return format.container === "mp4";
     },
+    quality: "highestvideo",
   };
   let videoMetadata = {};
   ytdl(url, youtubeDownloadOptions)

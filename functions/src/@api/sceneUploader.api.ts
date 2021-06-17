@@ -11,18 +11,18 @@ import os from "os";
 import { SCENE_VIDEOS_CLOUD_BUCKET } from "@constants/constants";
 import type {
   ISceneReference,
-  TExtractValidScenesInput,
+  TextractValidTimerangesInput,
+  ISceneTimerange,
 } from "@customTypes/types.spec";
 import ffmpeg from "fluent-ffmpeg";
 import { path as ffmpegPath } from "@ffmpeg-installer/ffmpeg";
 ffmpeg.setFfmpegPath(ffmpegPath);
 
-export const extractValidScenes = async ({
+export const extractValidTimeranges = async ({
   annotations,
   minSceneDuration,
   maxSceneDuration,
-  videoPath,
-}: TExtractValidScenesInput): Promise<ISceneReference[]> => {
+}: TextractValidTimerangesInput): Promise<ISceneTimerange[]> => {
   const allValidTimeRanges = annotations.annotationResults
     .filter((annotationSet) => {
       return annotationSet.shotAnnotations;
@@ -57,46 +57,44 @@ export const extractValidScenes = async ({
       };
     })
     .filter((annotation) => {
-      return (
-        annotation.reference.durationInSecondsNanos >= minSceneDuration &&
-        annotation.reference.durationInSecondsNanos < maxSceneDuration
-      );
+      console.log(annotation);
+      console.log(minSceneDuration);
+      console.log(maxSceneDuration);
+      return true;
+      // return (
+      //   annotation.reference.durationInSecondsNanos >= minSceneDuration &&
+      //   annotation.reference.durationInSecondsNanos < maxSceneDuration
+      // );
     });
-  // REPLACE IN PRODUCTION (remove subset)
-  // const subset = allValidTimeRanges.slice(0, 10);
-  const totalTimerangeCount = allValidTimeRanges.length;
-  console.log(`Found ${totalTimerangeCount} total timeranges...`);
-  const scenes = await Promise.all(
-    allValidTimeRanges.map(
-      async (timerange, index): Promise<ISceneReference> => {
-        console.log(
-          `Splicing timerange #${index + 1} of ${totalTimerangeCount}`
-        );
-        const sceneId = `scene-${uuidv4()}`;
-        const scenePath = path.join(os.tmpdir(), `${sceneId}.mp4`);
-        return new Promise((resolve, reject) => {
-          ffmpeg(videoPath)
-            .setStartTime(timerange.reference.startInSecondsNanos)
-            .setDuration(timerange.reference.durationInSecondsNanos)
-            .output(scenePath)
-            .on("end", (err) => {
-              if (!err) {
-                console.log(`Cut & saved scene ${sceneId}.mp4`);
-                resolve({
-                  sceneId,
-                  scenePath,
-                });
-              }
-            })
-            .on("error", (err) => {
-              reject(err);
-            })
-            .run();
-        });
-      }
-    )
-  );
-  return scenes;
+  return allValidTimeRanges;
+};
+
+export const sliceSceneFromVideo = (
+  videoPath: string,
+  timerange: ISceneTimerange
+): Promise<ISceneReference> => {
+  // console.log(`Splicing timerange #${index + 1} of ${totalTimerangeCount}`);
+  const sceneId = `scene-${uuidv4()}`;
+  const scenePath = path.join(os.tmpdir(), `${sceneId}.mp4`);
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .setStartTime(timerange.reference.startInSecondsNanos)
+      .setDuration(timerange.reference.durationInSecondsNanos)
+      .output(scenePath)
+      .on("end", (err) => {
+        if (!err) {
+          console.log(`Cut & saved scene ${sceneId}.mp4`);
+          resolve({
+            sceneId,
+            scenePath,
+          });
+        }
+      })
+      .on("error", (err) => {
+        reject(err);
+      })
+      .run();
+  });
 };
 
 interface IUploadScene {

@@ -23,11 +23,10 @@ export interface ILabeledScene {
 }
 
 // types related to scene splitting annotations
-export interface TExtractValidScenesInput {
+export interface TextractValidTimerangesInput {
   annotations: protos.google.cloud.videointelligence.v1.AnnotateVideoResponse;
   minSceneDuration: number;
   maxSceneDuration: number;
-  videoPath: string;
 }
 export interface ISplitSceneAnnotation {
   annotation: {
@@ -43,6 +42,18 @@ export interface ISplitSceneAnnotation {
 export interface ISceneReference {
   sceneId: string;
   scenePath: string;
+}
+
+export interface ISceneTimerange {
+  annotation: {
+    duration: protos.google.protobuf.IDuration | null | undefined;
+    startTimeOffset?: protos.google.protobuf.IDuration | null | undefined;
+    endTimeOffset?: protos.google.protobuf.IDuration | null | undefined;
+  };
+  reference: {
+    startInSecondsNanos: number;
+    durationInSecondsNanos: number;
+  };
 }
 
 // types for youtube video metadata

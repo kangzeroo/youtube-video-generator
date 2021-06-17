@@ -88,3 +88,13 @@ export const generateStorageUrlWithDownloadToken = (
 //   VIDEO_THUMBNAILS_CLOUD_BUCKET: (): string => "",
 //   SCENE_METADATA_CLOUD_BUCKET: (): string => "",
 // };
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export const sliceIntoChunks = (arr: any[], chunkSize: number): any[] => {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    const chunk = arr.slice(i, i + chunkSize);
+    res.push(chunk);
+  }
+  return res;
+};
