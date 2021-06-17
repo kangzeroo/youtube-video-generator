@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import videojs from "video.js";
 
 // Styles
@@ -27,10 +27,12 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   videoSrc,
   sceneId,
 }) => {
-  const videoNode = React.useRef<HTMLVideoElement>(null);
-  const player = React.useRef<videojs.Player>();
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const videoNode = useRef<HTMLVideoElement>(null);
+  const player = useRef<videojs.Player>();
 
   const videoPlayerId = `videoplayer-${sceneId}`;
+  const videoPlayerWrapperId = `wrapper-${videoPlayerId}`;
 
   useEffect(() => {
     const intersectionObserverOptions = {
@@ -45,12 +47,14 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
       observer
     ) => {
       entries.forEach((entry) => {
-        if (entry.target.id === videoPlayerId) {
+        if (entry.target.id === videoPlayerWrapperId) {
           if (entry.isIntersecting) {
-            (entry.target as HTMLVideoElement).play();
-          } else {
-            (entry.target as HTMLVideoElement).pause();
+            videoNode.current?.play();
           }
+          // fix this paused identifier specific to the videojs library
+          // else if (!videoNode.current?.paused) {
+          //   videoNode.current?.pause();
+          // }
         }
       });
     };
@@ -58,8 +62,10 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
       intersectionObserverCallback,
       intersectionObserverOptions
     );
-    observer.observe(videoNode as unknown as HTMLElement);
-  }, [videoPlayerId]);
+    if (wrapperRef.current) {
+      observer.observe(wrapperRef.current);
+    }
+  }, [videoPlayerWrapperId]);
 
   useEffect(() => {
     player.current = videojs(videoNode.current || "", {
@@ -87,15 +93,17 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
       {/* <video preload="none"> because we don't want to spam max HTTP connections to same domain (HTTP 1.1-6 spec)
           this improves load speed significantly
       */}
-      <video
-        id={videoPlayerId}
-        muted
-        preload="none"
-        autoPlay={false}
-        ref={videoNode}
-        className="video-js"
-        {...videoAttrs}
-      />
+      <div id={videoPlayerWrapperId} ref={wrapperRef}>
+        <video
+          id={videoPlayerId}
+          muted
+          preload="none"
+          autoPlay={false}
+          ref={videoNode}
+          className="video-js"
+          {...videoAttrs}
+        />
+      </div>
     </>
   );
 };
