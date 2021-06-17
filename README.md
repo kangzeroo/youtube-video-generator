@@ -92,11 +92,9 @@ gcloud config unset auth/impersonate_service_account
 
 ## To Do
 1. Clean up code to be more readable
-2. Refactor MostRecentSceneResults to de-couple the GQL and the ResultsList
 3. Potentially add React.useBoundingBox to exclude JS rendering of videos outside the current window display.
 4. Might benefit from React.useRef to delete videos
 3. Add dark theme with React.useContext
-4. Improve results rendering. Too many videos playing all at once. Potentially improve frontend rendering with React.useMemo on video HTML, or just use thumbnails
 3. Write tests when ironed out
 2. Write declarative firebase infrastructure config files with alias environment variables
 ## Optimizations
