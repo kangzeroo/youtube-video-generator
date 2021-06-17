@@ -5,8 +5,8 @@ import { useState } from "react";
 import { COLORS } from "@constants/styles.spec";
 import logo from "@assets/youtube-generator-logo.png";
 import { Input, Space, Image, Button } from "antd";
-import SceneResults from "@components/scene-results";
-import MostRecentSceneResults from "@components/scene-results/MostRecentSceneResults";
+import ScenesByTags from "@components/scenes-by-tags";
+import RecentScenes from "@components/recent-scenes";
 const { Search } = Input;
 
 const BrowserPage = () => {
@@ -43,9 +43,9 @@ const BrowserPage = () => {
           </Button>
         </div>
         {searchString && !showMostRecent && (
-          <SceneResults searchString={searchString} />
+          <ScenesByTags searchString={searchString} />
         )}
-        {showMostRecent && <MostRecentSceneResults />}
+        {showMostRecent && <RecentScenes />}
       </Space>
     </div>
   );
