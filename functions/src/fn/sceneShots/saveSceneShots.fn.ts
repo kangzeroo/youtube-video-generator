@@ -21,12 +21,14 @@ import { protos } from "@google-cloud/video-intelligence";
 import {
   generateStorageUrlWithDownloadToken,
   extractRelevantIds,
+  sliceIntoChunks,
 } from "@api/helper.api";
 import camelize from "camelize";
 import {
-  extractValidScenes,
+  extractValidTimeranges,
   uploadSceneToBucket,
   saveSceneToFirestore,
+  sliceSceneFromVideo,
 } from "@api/sceneUploader.api";
 import {
   RAW_VIDEOS_CLOUD_BUCKET,
@@ -35,6 +37,7 @@ import {
   MAX_SCENE_DURATION,
   SCENE_VIDEOS_CLOUD_BUCKET,
 } from "@constants/constants";
+import { ISceneTimerange } from "@customTypes/types.spec";
 
 const log = functions.logger.log;
 const runtimeOpts = {
@@ -88,42 +91,64 @@ const saveSceneShots = functions
 
       log("4. annotations: ", annotations);
       // Extract only scenes with annotated duration of over 2 seconds
-      const validScenes = await extractValidScenes({
+      const validTimeranges = await extractValidTimeranges({
         annotations,
         minSceneDuration: MIN_SCENE_DURATION,
         maxSceneDuration: MAX_SCENE_DURATION,
-        videoPath,
       });
-      log("5. validScene: ", validScenes);
+      log("5. validTimerange: ", validTimeranges);
 
       log("6. Uploading to cloud bucket... ");
       // upload each valid scene to the right cloud bucket and save reference in firestore
-      const totalScenes = validScenes.length;
-      await Promise.all(
-        validScenes.map(async ({ sceneId, scenePath }, index) => {
-          console.log(`Uploading scene #${index + 1} of ${totalScenes}`);
-          const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
-          const { publicUrl } = generateStorageUrlWithDownloadToken(
-            SCENE_VIDEOS_CLOUD_BUCKET,
-            destination
-          );
-          // upload both at once - file storage and database
-          await Promise.all([
-            await uploadSceneToBucket({
-              scenePath,
-              destination,
-            }),
-            await saveSceneToFirestore({
-              publicUrl,
-              sceneId,
-              userId,
-              videoId,
-            }),
-          ]);
-        })
-      ).catch((e) => {
-        throw e;
-      });
+      const totalTimeranges = validTimeranges.length;
+      let chunkSize = 1;
+      if (totalTimeranges > 100) {
+        chunkSize = 4;
+      } else if (totalTimeranges > 60) {
+        chunkSize = 3;
+      } else if (totalTimeranges > 20) {
+        chunkSize = 2;
+      }
+      const chunkTimeranges: ISceneTimerange[][] = sliceIntoChunks(
+        validTimeranges,
+        chunkSize
+      );
+      for (const [chunkIndex, chunkedTimerange] of chunkTimeranges.entries()) {
+        console.log(
+          `Processing chunk timerange ${chunkIndex + 1} of ${
+            chunkTimeranges.length
+          }`
+        );
+        await Promise.all(
+          chunkedTimerange.map(async (timerange, index) => {
+            console.log(`Uploading scene #${index + 1} of ${totalTimeranges}`);
+            const { sceneId, scenePath } = await sliceSceneFromVideo(
+              videoPath,
+              timerange
+            );
+            const destination = `user/${userId}/video/${videoId}/scene/${sceneId}/${sceneId}.mp4`;
+            const { publicUrl } = generateStorageUrlWithDownloadToken(
+              SCENE_VIDEOS_CLOUD_BUCKET,
+              destination
+            );
+            // upload both at once - file storage and database
+            await Promise.all([
+              await uploadSceneToBucket({
+                scenePath,
+                destination,
+              }),
+              await saveSceneToFirestore({
+                publicUrl,
+                sceneId,
+                userId,
+                videoId,
+              }),
+            ]);
+          })
+        ).catch((e) => {
+          throw e;
+        });
+      }
       log("7. Saved all scenes to cloud bucket!");
     }
   });

@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import type {
   QueryGetScenesByTagArgs,
+  MutationDeleteSceneArgs,
   Scene,
 } from "@customTypes/graphql-types";
 import type {
@@ -18,8 +19,8 @@ const transformFirestoreSceneToGQL = (scene: any) => {
     sceneId: scene.sceneId,
     publicUrl: scene.publicUrl,
     durationInSeconds: scene.durationInSeconds,
-    labels: scene.labels,
-    thumbnails: scene.thumbnails,
+    labels: scene.labels || [],
+    thumbnails: scene.thumbnails || [],
     downloadedDate: scene.downloadedDate,
   };
 };
@@ -57,7 +58,7 @@ export const getMostRecentScenes = async (): Promise<Scene[]> => {
   const scenes = await firestore
     .collection("scenes")
     .orderBy("downloadedDate", "desc")
-    .limit(30)
+    .limit(100)
     .get()
     .then((querySnapshot) => {
       const results: any[] = [];
@@ -71,4 +72,43 @@ export const getMostRecentScenes = async (): Promise<Scene[]> => {
       throw err;
     });
   return scenes;
+};
+
+export const deleteScene = async (
+  _: any,
+  { sceneId }: MutationDeleteSceneArgs,
+  { firestore }: IGraphQLContext
+): Promise<string> => {
+  const results = await firestore
+    .collection("scenes")
+    .where("sceneId", "==", sceneId)
+    .get()
+    .then((querySnapshot) => {
+      const results: any[] = [];
+      querySnapshot.forEach((doc) => {
+        results.push(doc.data());
+      });
+      return results;
+    })
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  console.log("results...");
+  console.log(results);
+  await Promise.all(
+    results.map(async (doc) => {
+      await firestore
+        .collection("scenes")
+        .doc(doc.sceneId)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted! ", doc.sceneId);
+        })
+        .catch((error) => {
+          console.error("Error removing document: ", error);
+        });
+    })
+  );
+  return `Deleted scenes ${results.join(", ")}`;
 };

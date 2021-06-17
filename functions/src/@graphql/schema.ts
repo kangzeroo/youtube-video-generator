@@ -5,6 +5,9 @@ const schema = gql`
     getScenesByTag(tags: [Tag!]!): [Scene]
     getMostRecentScenes: [Scene]
   }
+  type Mutation {
+    deleteScene(sceneId: String!): String
+  }
   scalar Date
   scalar Tag
   type Scene {

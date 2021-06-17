@@ -18,6 +18,10 @@ const BrowserPage = () => {
     updateShowMostRecent(false);
   };
 
+  // we can use a closure to prevent re-rendering the same function in jsx
+  const updateShowMostRecentFn = (bool: boolean) => () =>
+    updateShowMostRecent(bool);
+
   return (
     <div css={styles.canvas}>
       <Space direction="vertical" align="center">
@@ -34,7 +38,7 @@ const BrowserPage = () => {
             onSearch={onSearch}
             style={styles.searchBar}
           />
-          <Button onClick={() => updateShowMostRecent(true)}>
+          <Button onClick={updateShowMostRecentFn(true)}>
             Show Most Recent
           </Button>
         </div>

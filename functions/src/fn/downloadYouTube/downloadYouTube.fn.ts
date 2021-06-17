@@ -41,63 +41,72 @@ const saveOriginalVideoMetadataFirestore = async (
   );
 };
 
-const downloadYouTube = functions.https.onRequest(async (req, res) => {
-  log("1. downloadYouTube()");
-  const videoId = uuidv4();
-  const userId = USER_ID;
-  const destinationPath = `user/${userId}/video/${videoId}/${videoId}.mp4`;
-  const file = bucket.file(destinationPath);
-  const { publicUrl, downloadToken } = generateStorageUrlWithDownloadToken(
-    bucket.name,
-    destinationPath
-  );
+const runtimeOpts = {
+  timeoutSeconds: 540,
+  memory: "1GB" as "1GB",
+};
 
-  log("2. Prepare attempt to upload youtube video to google cloud storage....");
-  const { url, startTime, endTime } = req.body;
-  const youtubeDownloadOptions = {
-    ...(startTime &&
-      endTime && {
-        range: { start: startTime, end: endTime },
-      }),
-    filter: (format: IVideoFormat) => format.container === "mp4",
-    quality: "highestvideo",
-  };
-  log("3. Prepare to write video to cloud bucket");
-  const firebaseBucketWriteStream = file.createWriteStream({
-    metadata: {
+const downloadYouTube = functions
+  .runWith(runtimeOpts)
+  .https.onRequest(async (req, res) => {
+    log("1. downloadYouTube()");
+    const videoId = uuidv4();
+    const userId = USER_ID;
+    const destinationPath = `user/${userId}/video/${videoId}/${videoId}.mp4`;
+    const file = bucket.file(destinationPath);
+    const { publicUrl, downloadToken } = generateStorageUrlWithDownloadToken(
+      bucket.name,
+      destinationPath
+    );
+
+    log(
+      "2. Prepare attempt to upload youtube video to google cloud storage...."
+    );
+    const { url, startTime, endTime } = req.body;
+    const youtubeDownloadOptions = {
+      ...(startTime &&
+        endTime && {
+          range: { start: startTime, end: endTime },
+        }),
+      filter: (format: IVideoFormat) => format.container === "mp4",
+      quality: "highestvideo",
+    };
+    log("3. Prepare to write video to cloud bucket");
+    const firebaseBucketWriteStream = file.createWriteStream({
       metadata: {
-        firebaseStorageDownloadTokens: downloadToken,
+        metadata: {
+          firebaseStorageDownloadTokens: downloadToken,
+        },
       },
-    },
-  });
-  let videoMetadata: IVideoMetadata | null = null;
-  ytdl(url, youtubeDownloadOptions)
-    .on("info", (info: IVideoInfo) => {
-      videoMetadata = createVideoMetadataFirestore(info);
-    })
-    .pipe(firebaseBucketWriteStream)
-    .on("error", (err: Error) => {
-      console.error(err);
-      res.status(400).send({
-        message: `Failed to upload youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
-        error: err,
-      });
-    })
-    .on("finish", async () => {
-      console.log("Successfully uploaded");
-      if (videoMetadata) {
-        await saveOriginalVideoMetadataFirestore(
-          videoId,
-          userId,
-          videoMetadata
-        );
-        res.status(200).send({
-          message: `Successfully uploaded youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
-        });
-      } else {
-        throw Error("Could not find any video metadata at all!");
-      }
     });
-});
+    let videoMetadata: IVideoMetadata | null = null;
+    ytdl(url, youtubeDownloadOptions)
+      .on("info", (info: IVideoInfo) => {
+        videoMetadata = createVideoMetadataFirestore(info);
+      })
+      .pipe(firebaseBucketWriteStream)
+      .on("error", (err: Error) => {
+        console.error(err);
+        res.status(400).send({
+          message: `Failed to upload youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
+          error: err,
+        });
+      })
+      .on("finish", async () => {
+        console.log("Successfully uploaded");
+        if (videoMetadata) {
+          await saveOriginalVideoMetadataFirestore(
+            videoId,
+            userId,
+            videoMetadata
+          );
+          res.status(200).send({
+            message: `Successfully uploaded youtube video ${url} to Google Cloud Storage at location: ${publicUrl}`,
+          });
+        } else {
+          throw Error("Could not find any video metadata at all!");
+        }
+      });
+  });
 
 export default downloadYouTube;

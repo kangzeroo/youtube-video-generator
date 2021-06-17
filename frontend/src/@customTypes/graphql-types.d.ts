@@ -23,9 +23,20 @@ export enum CacheControlScope {
 }
 
 
+export type Mutation = {
+  __typename?: 'Mutation';
+  deleteScene?: Maybe<Scalars['String']>;
+};
+
+
+export type MutationDeleteSceneArgs = {
+  sceneId: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
   getScenesByTag?: Maybe<Array<Maybe<Scene>>>;
+  getMostRecentScenes?: Maybe<Array<Maybe<Scene>>>;
 };
 
 
@@ -126,9 +137,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   Date: ResolverTypeWrapper<Scalars['Date']>;
+  Mutation: ResolverTypeWrapper<{}>;
+  String: ResolverTypeWrapper<Scalars['String']>;
   Query: ResolverTypeWrapper<{}>;
   Scene: ResolverTypeWrapper<Scene>;
-  String: ResolverTypeWrapper<Scalars['String']>;
   Float: ResolverTypeWrapper<Scalars['Float']>;
   Tag: ResolverTypeWrapper<Scalars['Tag']>;
   Upload: ResolverTypeWrapper<Scalars['Upload']>;
@@ -139,9 +151,10 @@ export type ResolversTypes = ResolversObject<{
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = ResolversObject<{
   Date: Scalars['Date'];
+  Mutation: {};
+  String: Scalars['String'];
   Query: {};
   Scene: Scene;
-  String: Scalars['String'];
   Float: Scalars['Float'];
   Tag: Scalars['Tag'];
   Upload: Scalars['Upload'];
@@ -158,8 +171,13 @@ export interface DateScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes
   name: 'Date';
 }
 
+export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  deleteScene?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType, RequireFields<MutationDeleteSceneArgs, 'sceneId'>>;
+}>;
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getScenesByTag?: Resolver<Maybe<Array<Maybe<ResolversTypes['Scene']>>>, ParentType, ContextType, RequireFields<QueryGetScenesByTagArgs, 'tags'>>;
+  getMostRecentScenes?: Resolver<Maybe<Array<Maybe<ResolversTypes['Scene']>>>, ParentType, ContextType>;
 }>;
 
 export type SceneResolvers<ContextType = any, ParentType extends ResolversParentTypes['Scene'] = ResolversParentTypes['Scene']> = ResolversObject<{
@@ -182,6 +200,7 @@ export interface UploadScalarConfig extends GraphQLScalarTypeConfig<ResolversTyp
 
 export type Resolvers<ContextType = any> = ResolversObject<{
   Date?: GraphQLScalarType;
+  Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Scene?: SceneResolvers<ContextType>;
   Tag?: GraphQLScalarType;
