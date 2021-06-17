@@ -44,6 +44,7 @@ const VideoCard = ({ item }: IProps) => {
       hoverable
       cover={
         <VideoPlayer
+          sceneId={item.sceneId}
           options={videoPlayerOptions(item)}
           thumbnail={item.thumbnails && item.thumbnails[0]}
           videoSrc={item.publicUrl}

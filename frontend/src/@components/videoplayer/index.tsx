@@ -8,6 +8,7 @@ interface IVideoPlayerProps {
   options: videojs.PlayerOptions;
   thumbnail?: string | null;
   videoSrc: string;
+  sceneId: string;
 }
 
 const initialOptions: videojs.PlayerOptions = {
@@ -24,9 +25,41 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   options,
   thumbnail,
   videoSrc,
+  sceneId,
 }) => {
   const videoNode = React.useRef<HTMLVideoElement>(null);
   const player = React.useRef<videojs.Player>();
+
+  const videoPlayerId = `videoplayer-${sceneId}`;
+
+  useEffect(() => {
+    const intersectionObserverOptions = {
+      // root=null means the viewport will be the window
+      root: null,
+      rootMargin: "0px",
+      // how much of the video must appear in viewport in order to play
+      threshold: 1.0,
+    };
+    const intersectionObserverCallback: IntersectionObserverCallback = (
+      entries,
+      observer
+    ) => {
+      entries.forEach((entry) => {
+        if (entry.target.id === videoPlayerId) {
+          if (entry.isIntersecting) {
+            (entry.target as HTMLVideoElement).play();
+          } else {
+            (entry.target as HTMLVideoElement).pause();
+          }
+        }
+      });
+    };
+    const observer = new IntersectionObserver(
+      intersectionObserverCallback,
+      intersectionObserverOptions
+    );
+    observer.observe(videoNode as unknown as HTMLElement);
+  }, [videoPlayerId]);
 
   useEffect(() => {
     player.current = videojs(videoNode.current || "", {
@@ -55,9 +88,10 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
           this improves load speed significantly
       */}
       <video
+        id={videoPlayerId}
         muted
         preload="none"
-        autoPlay
+        autoPlay={false}
         ref={videoNode}
         className="video-js"
         {...videoAttrs}
