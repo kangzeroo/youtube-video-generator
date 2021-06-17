@@ -111,11 +111,15 @@ gcloud config unset auth/impersonate_service_account
     - frontend UI libraries can be loaded selectively instead of all at once, thus reducing total package size sent to client
     - the database entries could have their own types
     - would be nice to implement react-router on frontend so that we can dynamically render components based on URL instead of internal JS variables. that way its easier to share
-    - narrow down the permissions of the IAM role
+    - narrow down the permissions of the IAM role (current has editor access to all cloud buckets, instead of selectively buckets)
     - unit test for the videos list
     - integration test for the cloud functions + storage
     - incomplete frontend behavior. when we delete a video, it doesnt disappear from the UI (no UX feedback)
     - the code could be cleaned up more so that the files arent so long and can read more like english (the hassle is that we lose the implicit types and have to import it all over again)
+    - Consider refactoring the order of video annotation to save costs (since shot detection is free with labeling)
+    - Consider downloading the HD 1080p and 360p versions so that one can load fast on browser and the other can be the actual download
+    - Write declarative firebase infrastructure config files with alias environment variables (cloud setup currently dependents on manually clicking buttons in Firebase console in browser)
+    - more consistency on where we store types (some are in the types folder, some are colocated)
 
 ## To Do
 1. Clean up code to be more readable
