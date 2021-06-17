@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, memo } from "react";
 import videojs from "video.js";
 
 // Styles
@@ -111,4 +111,4 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   );
 };
 
-export default VideoPlayer;
+export default memo(VideoPlayer);

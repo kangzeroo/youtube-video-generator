@@ -72,6 +72,9 @@ gcloud config unset auth/impersonate_service_account
 
 ![Live Demo](https://firebasestorage.googleapis.com/v0/b/video-entropy.appspot.com/o/public-assets%2Fdemos%2Fdemo-video-generator.gif?alt=media&token=2272ffae-7511-4761-8f05-2a7c09d243a0)
 
+## Architecture Diagram
+
+![architecture](./assets/architecture-diagram.jpg)
 
 ## Cost Calculations
 
@@ -89,10 +92,34 @@ gcloud config unset auth/impersonate_service_account
 2000 video --> 100,000 scenes --> $1872
 ```
 
+## New Developer Walkthrough
+1. Quick rundown of the cloud functions backend & react frontend
+    - look at the architecture diagram
+    - look at the server cost calculations
+2. Where the awesome optimizations are
+    - delightful developer experience. comprehensive type coverage, tsconfig absolute imports, monorepo but not monolith (easy to find everything)
+    - frontend videos are preloaded and only play when scrolled into view (uses the IntersectionObserver API)
+    - graphQL types are dynamically generated and shared on frontend & backend
+    - does not use webpack, which is one less technology to worry about
+    - reuseable functional components with reuseable hooks
+    - able to develop backend typescript files locally with chrome console support
+    - React.memo is used on the videos so that we aren't spending precious resources re-rendering every time
+    - IAM role impersonation is used instead of a master admin account. more secure
+3. Where the improvements need to be made
+    - we dont need to load all the videos at once, we can scroll paginate and only load 5 rows at a time
+    - backend firebase functions GraphQL resolver does NOT cache out of box like it would in a long lived machine. need to manually implement cacheing
+    - frontend UI libraries can be loaded selectively instead of all at once, thus reducing total package size sent to client
+    - the database entries could have their own types
+    - would be nice to implement react-router on frontend so that we can dynamically render components based on URL instead of internal JS variables. that way its easier to share
+    - narrow down the permissions of the IAM role
+    - unit test for the videos list
+    - integration test for the cloud functions + storage
+    - incomplete frontend behavior. when we delete a video, it doesnt disappear from the UI (no UX feedback)
+    - the code could be cleaned up more so that the files arent so long and can read more like english (the hassle is that we lose the implicit types and have to import it all over again)
 
 ## To Do
 1. Clean up code to be more readable
-3. Potentially add React.useBoundingBox to exclude JS rendering of videos outside the current window display.
+2. Fix the videojs library implementation of video.isPlaying (.paused)
 4. Might benefit from React.useRef to delete videos
 3. Add dark theme with React.useContext
 3. Write tests when ironed out
