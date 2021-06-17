@@ -50,11 +50,9 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
         if (entry.target.id === videoPlayerWrapperId) {
           if (entry.isIntersecting) {
             videoNode.current?.play();
+          } else if (!videoNode.current?.paused) {
+            videoNode.current?.pause();
           }
-          // fix this paused identifier specific to the videojs library
-          // else if (!videoNode.current?.paused) {
-          //   videoNode.current?.pause();
-          // }
         }
       });
     };
@@ -89,15 +87,20 @@ const VideoPlayer: React.FC<IVideoPlayerProps> = ({
   return (
     <>
       {/* <link> lets us preload videos without blocking DOM */}
-      <link rel="preload" as="video" href={videoSrc} />
-      {/* <video preload="none"> because we don't want to spam max HTTP connections to same domain (HTTP 1.1-6 spec)
+      <link
+        key={`preload-link-${videoPlayerId}`}
+        rel="preload"
+        as="video"
+        href={videoSrc}
+      />
+      {/* we do not set <video preload="auto"> because we don't want to spam max HTTP connections to same domain (HTTP 1.1-6 spec)
           this improves load speed significantly
       */}
       <div id={videoPlayerWrapperId} ref={wrapperRef}>
         <video
           id={videoPlayerId}
           muted
-          preload="none"
+          preload="metadata"
           autoPlay={false}
           ref={videoNode}
           className="video-js"
